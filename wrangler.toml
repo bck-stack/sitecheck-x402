@@ -5,12 +5,15 @@ compatibility_date = "2026-09-01"
 compatibility_flags = ["nodejs_compat"]
 
 # Receiving addresses. A network is offered only when its address is set; leave it empty to switch it off.
-# Arc also needs the Circle API key as a secret:  npx wrangler secret put CIRCLE_API_KEY
-# See docs/NETWORKS.md for the networks, facilitators and where each value comes from.
+# Arc uses Circle's keyless trial and is switched on by a secret, not by PAY_TO_ARC:
+#   node scripts/new-arc-wallet.mjs            (creates the dedicated receiving wallet, key in .env.arc-seller)
+#   npx wrangler secret put ARC_SELLER_KEY     (paste the key from .env.arc-seller)
+# Fallback without ARC_SELLER_KEY: set PAY_TO_ARC and  npx wrangler secret put CIRCLE_API_KEY
+# Never put a key here: [vars] are plain text. See docs/NETWORKS.md for where each value comes from.
 [vars]
 PAY_TO = ""          # Base: EVM address (0x...) that receives USDC on Base
 PAY_TO_SOLANA = ""   # Solana: wallet address (base58) that already has a USDC token account
-PAY_TO_ARC = ""      # Arc: EVM address (0x...) that receives USDC on Arc mainnet
+PAY_TO_ARC = ""      # Arc: optional with ARC_SELLER_KEY (must then equal its address); required with CIRCLE_API_KEY
 FACILITATOR_URL = "https://facilitator.payai.network"               # Base and Solana
 FACILITATOR_URL_ARC = "https://api.circle.com/v1/facilitator/x402"  # Arc (Circle Facilitator Service)
 
