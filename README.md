@@ -80,9 +80,15 @@ On the first run it creates a throwaway wallet in a git-ignored file (`.env.evm`
 ## Design notes
 
 - **Pay only for results.** The settlement runs after the handler. If a model or upstream fails, the handler returns an error status and the payment is **not settled**, so the buyer isn't charged. This holds on all three networks and is covered by the tests.
-- **One route, several networks.** Each route lists one x402 `accepts` entry per configured network. Base and Solana settle through PayAI, and Arc through Circle's Facilitator Service with a Circle API key. Each facilitator client only reports the networks assigned to it (`lib/payments.js`).
+- **One route, several networks.** Each route lists one x402 `accepts` entry per configured network. Base and Solana settle through PayAI. Arc settles through Circle's Facilitator Service on its keyless trial: each request carries a seller proof signed by the Arc receiving wallet's key (see below). Each facilitator client only reports the networks assigned to it (`lib/payments.js`).
 - **Workers-safe x402 middleware.** A Worker can't await a promise created by another request, and the x402 middleware initialises lazily. Each request builds and initialises its own middleware until one has finished; that one is then reused (`lib/app.js`).
-- **No keys in the repo.** Receiving addresses live in `wrangler.toml` `[vars]` (empty by default), and the Circle API key is a Worker secret. The helper scripts keep their throwaway wallets in git-ignored `.env.*` files.
+- **No keys in the repo.** Receiving addresses live in `wrangler.toml` `[vars]` (empty by default). The Arc seller key (or, as a fallback, the Circle API key) is a Worker secret. The helper scripts keep their wallets in git-ignored `.env.*` files.
+
+### Arc: Circle's keyless trial and a hot wallet
+
+Circle's Facilitator Service normally needs an API key, and on mainnet that needs a Circle account with a credit card on file. SiteCheck uses Circle's [keyless trial](https://developers.circle.com/facilitator-service/keyless-trial) instead. Every `/verify` and `/settle` request carries a `Facilitator-Seller-Proof` header: an EIP-712 signature by the key that controls Arc's `payTo`, bound to the route, the exact request body and a fresh nonce (`lib/sellerProof.js`, `lib/circle.js`).
+
+The trade-off: that key has to live in the Worker, as the secret `ARC_SELLER_KEY`. So Arc's `payTo` is a dedicated hot wallet that only receives payments. The owner sweeps it to a cold wallet regularly (`scripts/sweep-arc.mjs`), so a leaked key would expose at most what came in since the last sweep. The trial allowance is also limited, and Circle doesn't publish it. When it runs out, Circle answers `403 registration_required`. The payment is not settled and the buyer is not charged, the Worker logs it, and `GET /health` shows `arc.trialExhausted: true`. From then on, Arc needs a Circle API key or has to be switched off. Details: [docs/NETWORKS.md](docs/NETWORKS.md#keyless-trial-seller-proofs).
 
 ## Run your own
 
@@ -92,22 +98,27 @@ npm test                    # no network needed: the facilitators are mocked
 npx wrangler dev            # local
 ```
 
-Deploy: set `account_id` and at least one receiving address in `wrangler.toml`, then:
+Deploy: set `account_id` and at least one receiving address in `wrangler.toml` (or pass it with `--var`). For Arc, create the hot wallet and store its key first:
 
 ```bash
-npx wrangler secret put CIRCLE_API_KEY    # only if you set PAY_TO_ARC
+node scripts/new-arc-wallet.mjs            # Arc only: prints the new address; the key goes to .env.arc-seller
+npx wrangler secret put ARC_SELLER_KEY     # paste the key from .env.arc-seller
 npx wrangler deploy
+node scripts/sweep-arc.mjs --to 0xYourColdWallet          # later, regularly: shows what it would send
+node scripts/sweep-arc.mjs --to 0xYourColdWallet --yes    # sends it
 ```
 
 | Variable | Network | Notes |
 |---|---|---|
 | `PAY_TO` | Base | EVM address |
 | `PAY_TO_SOLANA` | Solana | wallet address; it must already have a USDC token account |
-| `PAY_TO_ARC` | Arc | EVM address; also needs the `CIRCLE_API_KEY` secret ([Circle Console](https://console.circle.com), free) |
+| `ARC_SELLER_KEY` (secret) | Arc | private key of the dedicated Arc receiving wallet; switches Arc on and sets its `payTo` |
+| `PAY_TO_ARC` | Arc | optional with `ARC_SELLER_KEY` (if set, it must equal the key's address); without a seller key, the Arc address to use with `CIRCLE_API_KEY` |
+| `CIRCLE_API_KEY` (secret) | Arc | fallback only, used when `ARC_SELLER_KEY` is not set |
 | `FACILITATOR_URL` | Base, Solana | default `https://facilitator.payai.network` |
 | `FACILITATOR_URL_ARC` | Arc | default `https://api.circle.com/v1/facilitator/x402` |
 
-Leave an address empty to switch that network off. `GET /health` shows which networks are active and why the others are not.
+Leave an address empty to switch that network off. `GET /health` shows which networks are active and why the others are not. For Arc it also shows the auth mode, the receiving address and the trial status.
 
 ## License
 

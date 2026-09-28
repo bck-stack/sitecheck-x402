@@ -6,11 +6,12 @@ What the program asks for: a live deployment on Arc mainnet with a link, a publi
 
 ## Before you submit (owner checklist)
 
-1. Deploy with `PAY_TO_ARC` set and the `CIRCLE_API_KEY` secret added (see the README).
-2. Open `https://api.sitecheck-api.workers.dev/health` and check that `"arc"` is in `networks`.
-3. Fund the demo wallet with about 0.10 USDC on Arc, run `node scripts/demo-agent.mjs --network arc`, and copy the transaction link it prints. That link is the proof of a live Arc mainnet payment.
+1. Create the Arc receiving (hot) wallet with `node scripts/new-arc-wallet.mjs`, store its key with `npx wrangler secret put ARC_SELLER_KEY` and deploy (see the README). Arc runs on Circle's keyless trial, so no Circle account or API key is needed.
+2. Open `https://api.sitecheck-api.workers.dev/health` and check that `"arc"` is in `networks` and that `arc.auth` is `"seller-proof"`, with `arc.payTo` equal to the address the wallet script printed.
+3. Fund the demo wallet with about 0.10 USDC on Arc, run `node scripts/demo-agent.mjs --network arc`, and copy the transaction link it prints. That link is the proof of a live Arc mainnet payment. Every settlement uses up part of the trial allowance, whose size Circle doesn't publish, so don't make more test payments than you need.
 4. Optional: also run `POST /api/embed` ($0.001) on Arc once, to confirm Circle accepts the smallest price (see docs/NETWORKS.md, "Minimum amount").
-5. Fill in the `[...]` placeholders below.
+5. Sweep the test income to your own wallet: `node scripts/sweep-arc.mjs --to <cold address> --yes`.
+6. Fill in the `[...]` placeholders below.
 
 ## Form fields
 
@@ -29,7 +30,7 @@ Arc is one of the three networks it accepts. When an agent calls an endpoint, th
 - API and landing page: https://api.sitecheck-api.workers.dev
 - Discovery: https://api.sitecheck-api.workers.dev/.well-known/x402 (lists the Arc network, USDC asset and receiving address)
 - Example Arc mainnet payment: `[explorer.arc.io/tx/... link from step 3]`
-- Receiving address on Arc: `[PAY_TO_ARC]`
+- Receiving address on Arc: `[address printed by scripts/new-arc-wallet.mjs, also shown as arc.payTo on /health]`
 
 **Public repo**
 https://github.com/bck-stack/sitecheck-x402 (MIT)
@@ -49,11 +50,13 @@ x402, USDC, agent payments, AI agents, API, Circle Facilitator Service
 **How Arc is used.**
 - Arc is a first-class payment option on all eight endpoints: the `accepts` entry on `eip155:5042` for USDC at `0x3600000000000000000000000000000000000000`, with the EIP-712 domain `USDC` / `2`. This was checked on chain against the contract's `DOMAIN_SEPARATOR`.
 - Settlement goes through Circle's Facilitator Service (`api.circle.com/v1/facilitator/x402`), which screens both parties, pays gas and returns the transaction hash. SiteCheck does not run a relayer or hold a gas balance.
+- It uses Circle's keyless trial with seller proofs. Every `/verify` and `/settle` call is signed (EIP-712 `SellerRequest`) by the key of the Arc receiving address. The signature is bound to the route, a keccak256 hash of the exact request body and a fresh nonce. So Arc payments work without a Circle account or API key.
+- The trade-off: that key lives in the Worker as a secret. So the Arc receiving address is a dedicated hot wallet that only receives payments, and it is swept to a cold wallet regularly (`scripts/sweep-arc.mjs`). The sweep handles Arc's USDC-as-gas: it sends the balance minus a fixed fee, and the wallet ends at exactly zero.
 - The x402 client library does not yet know Arc's USDC, so the landing page, README and demo agent show the one-line opt-in that buyers need (`spendControls.allowedAssets`).
 - A demo agent (`scripts/demo-agent.mjs --network arc`) discovers the API, pays on Arc and prints the Arc explorer link.
 
 **Built with.** Cloudflare Workers, Workers AI, Hono, the x402 packages (`@x402/hono`, `@x402/evm`, `@x402/svm`) and Circle Facilitator Service.
 
-**Status, honestly.** The API has been live since September 2026 (Base first) and is listed on x402scan. The Arc and Solana payment options are new: the code was added on 2026-09-28 and goes live with the deployment above. There have been no paying customers yet.
+**Status, honestly.** The API has been live since September 2026 (Base first) and is listed on x402scan. The Arc and Solana payment options are new: the code was added on 2026-09-28 and goes live with the deployment above. There have been no paying customers yet. Arc settles on Circle's keyless trial, which has a limited allowance. When it runs out, Circle refuses further settlements (`403 registration_required`). The buyer is not charged, and the Worker logs it and shows it on `/health`. From then on, Arc needs a Circle API key to keep going.
 
 **What the grant would go to.** Keeping the Arc option running and tested: mainnet test payments on Arc, and adding Arc-specific examples to the docs.

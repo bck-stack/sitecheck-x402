@@ -44,7 +44,7 @@ Agents find the API on their own through `/.well-known/x402`, an OpenAPI documen
 - **No paying customers yet.** Any payments so far are our own test purchases.
 
 ## What was built during the hackathon
-- Solana (`solana:5eykt4…`, USDC through the PayAI facilitator) and Arc (`eip155:5042`, USDC through Circle's Facilitator Service) added next to Base on all eight endpoints. Each network is switched on by config.
+- Solana (`solana:5eykt4…`, USDC through the PayAI facilitator) and Arc (`eip155:5042`, USDC through Circle's Facilitator Service on its keyless trial, with per-request seller proofs signed by a dedicated receiving wallet that is swept regularly) added next to Base on all eight endpoints. Each network is switched on by config.
 - Discovery (`/.well-known/x402`, `openapi.json`) and a landing page listing all three networks, with copy-paste client code and a live 402 demo.
 - A demo agent (`scripts/demo-agent.mjs`) that discovers the API, pays on the network you choose and prints the transaction.
 - Tests (no network, mocked facilitators) proving that each route offers every configured network and that a failed call never settles.
