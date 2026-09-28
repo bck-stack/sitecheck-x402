@@ -1,0 +1,13 @@
+name = "api"
+# account_id = "<your Cloudflare account id>"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+PAY_TO = "0xca1c099b5c56aa5d75e42bff24b5aacc68726877"
+NETWORK = "eip155:8453"
+FACILITATOR_URL = "https://facilitator.payai.network"
+
+[ai]
+binding = "AI"

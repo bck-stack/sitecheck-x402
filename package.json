@@ -1,0 +1,35 @@
+{
+  "name": "sitecheck-x402",
+  "version": "1.0.0",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "keywords": [
+    "x402",
+    "base",
+    "usdc",
+    "ai-agents",
+    "cloudflare-workers",
+    "mcp",
+    "wcag"
+  ],
+  "license": "MIT",
+  "description": "Pay-per-call AI and web tools for agents on Cloudflare Workers, paid with x402 (USDC on Base).",
+  "dependencies": {
+    "@x402/core": "^2.27.0",
+    "@x402/evm": "^2.27.0",
+    "@x402/extensions": "^2.27.0",
+    "@x402/hono": "^2.27.0",
+    "hono": "^4.13.9"
+  },
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "devDependencies": {
+    "@x402/fetch": "^2.27.0",
+    "wrangler": "^4.138.0"
+  }
+}
