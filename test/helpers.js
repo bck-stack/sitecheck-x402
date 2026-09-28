@@ -23,17 +23,24 @@ export const fullEnv = (extra = {}) => ({
   ...extra,
 });
 
+// Keyless trial: a throwaway seller key; Arc's payTo becomes its address.
+export const SELLER_KEY = generatePrivateKey();
+export const SELLER = privateKeyToAccount(SELLER_KEY).address;
+export const keylessEnv = (extra = {}) => fullEnv({ PAY_TO_ARC: "", CIRCLE_API_KEY: "", ARC_SELLER_KEY: SELLER_KEY, ...extra });
+
 const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 
 // Replaces globalThis.fetch. Facilitator calls are answered and recorded; anything else fails.
+// `raw` keeps the request body exactly as sent (bytes), for checking seller proofs.
 export function mockFacilitators(t, { settle } = {}) {
   const calls = [];
   const real = globalThis.fetch;
   globalThis.fetch = async (input, init = {}) => {
     const url = String(input instanceof Request ? input.url : input);
     const headers = Object.fromEntries(new Headers(init.headers).entries());
-    const body = init.body ? JSON.parse(init.body) : undefined;
-    calls.push({ url, method: init.method || "GET", headers, body });
+    const raw = typeof init.body === "string" ? new TextEncoder().encode(init.body) : init.body;
+    const body = raw ? JSON.parse(new TextDecoder().decode(raw)) : undefined;
+    calls.push({ url, method: init.method || "GET", headers, body, raw });
     if (url === `${PAYAI_URL}/supported`) {
       return json({
         kinds: [
@@ -56,7 +63,8 @@ export function mockFacilitators(t, { settle } = {}) {
     }
     if (url.endsWith("/verify")) return json({ isValid: true, payer: "0x3333333333333333333333333333333333333333" });
     if (url.endsWith("/settle")) {
-      return json(settle ? settle(body) : { success: true, transaction: "0xsettled", network: body.paymentRequirements.network, payer: "0x3333333333333333333333333333333333333333" });
+      const answer = settle ? settle(body) : { success: true, transaction: "0xsettled", network: body.paymentRequirements.network, payer: "0x3333333333333333333333333333333333333333" };
+      return answer instanceof Response ? answer : json(answer);
     }
     throw new Error(`unexpected network call in test: ${url}`);
   };
@@ -68,6 +76,7 @@ export function mockFacilitators(t, { settle } = {}) {
   };
 }
 
+export { json };
 export const request = (app, path, env, init) => app.request(path, init, env);
 
 export function decodePaymentRequired(res) {
