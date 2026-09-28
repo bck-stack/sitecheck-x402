@@ -4,10 +4,15 @@ main = "worker.js"
 compatibility_date = "2026-09-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Receiving addresses. A network is offered only when its address is set; leave it empty to switch it off.
+# Arc also needs the Circle API key as a secret:  npx wrangler secret put CIRCLE_API_KEY
+# See docs/NETWORKS.md for the networks, facilitators and where each value comes from.
 [vars]
-PAY_TO = "0xca1c099b5c56aa5d75e42bff24b5aacc68726877"
-NETWORK = "eip155:8453"
-FACILITATOR_URL = "https://facilitator.payai.network"
+PAY_TO = ""          # Base: EVM address (0x...) that receives USDC on Base
+PAY_TO_SOLANA = ""   # Solana: wallet address (base58) that already has a USDC token account
+PAY_TO_ARC = ""      # Arc: EVM address (0x...) that receives USDC on Arc mainnet
+FACILITATOR_URL = "https://facilitator.payai.network"               # Base and Solana
+FACILITATOR_URL_ARC = "https://api.circle.com/v1/facilitator/x402"  # Arc (Circle Facilitator Service)
 
 [ai]
 binding = "AI"
