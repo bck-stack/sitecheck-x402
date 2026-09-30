@@ -2,7 +2,7 @@
 
 **Live:** https://api.sitecheck-api.workers.dev · listed on [x402scan](https://www.x402scan.com) · discovery: `/.well-known/x402`, `/openapi.json`
 
-SiteCheck is a small API that AI agents can use **without an account or API key**. Every call is paid per request in **USDC** with the [x402](https://x402.org) protocol, on **Base**, **Solana** or **Arc** (Circle's L1), whichever the buyer holds USDC on. Call it, get a `402 Payment Required` listing the price on each network, sign the payment and get the result. It runs on Cloudflare Workers and Workers AI.
+SiteCheck is a small API that AI agents can use **without an account or API key**. Besides its AI and web tools, it sells prediction-market data and unsigned trade transactions [powered by Panta](#prediction-markets-panta). Every call is paid per request in **USDC** with the [x402](https://x402.org) protocol, on **Base**, **Solana** or **Arc** (Circle's L1), whichever the buyer holds USDC on. Call it, get a `402 Payment Required` listing the price on each network, sign the payment and get the result. It runs on Cloudflare Workers and Workers AI.
 
 | Endpoint | Price | What it does |
 |---|---|---|
@@ -14,6 +14,29 @@ SiteCheck is a small API that AI agents can use **without an account or API key*
 | `POST /api/transcribe` | $0.01 | Whisper large-v3-turbo speech-to-text |
 | `POST /api/tts` | $0.02 | Deepgram Aura-2 text-to-speech |
 | `POST /api/embed` | $0.001 | BGE-M3 embeddings (1024-d, multilingual) |
+
+## Prediction markets (Panta)
+
+Agents can buy market intelligence and ready-to-sign trade transactions per call, with no account and no API key. An agent researching an event pays a fraction of a cent to find the markets and one cent for a market's odds and a neutral brief. An agent that wants to act pays for an unsigned [Panta](https://panta.market) buy transaction and signs it with its own wallet. Panta runs USDC prediction markets on Solana.
+
+| Endpoint | Price | What it does |
+|---|---|---|
+| `GET /api/markets?q=&status=&category=&limit=` | $0.002 | Searches Panta's markets. Compact rows: id, question, YES/NO prices and implied probabilities, volume, close and resolution times, resolution source |
+| `GET /api/markets/brief?id=` | $0.01 | One market: current odds, recent trading activity and a short neutral AI summary of what it asks, what resolves it and what the price implies |
+| `POST /api/markets/quote` | $0.005 | Body `{ id, side: "yes"\|"no", amountUsdc, wallet }`. Panta's quote: expected shares, average price, fee, and price impact against the spot price |
+| `POST /api/markets/build-buy` | $0.01 | Same body, plus an optional `maxSlippageBps`. Returns the **unsigned** transaction (Solana v0, base64) and Panta's instructions for the agent to sign and broadcast itself, plus the fields for the trade report |
+| `POST /api/markets/report` | free | After broadcasting, send `{ signature, orderId, quoteId, id, wallet }`. SiteCheck forwards it to Panta, which confirms and attributes the trade |
+
+- **No custody.** SiteCheck never signs, holds keys or custodies funds. `build-buy` hands back an unsigned transaction whose only signer is the agent's wallet.
+- **Information only, not financial advice.** Every response says so (`disclaimer`), and the brief never recommends a trade. If the model's text reads like advice, a factual template is returned instead.
+- **Powered by Panta.** Every response carries `poweredBy: { text: "Powered by Panta", url: "https://panta.market" }`, as Panta's Terms of Use require.
+- **Pay only for results**, as with every tool: if Panta refuses or fails, the call returns an error and nothing is settled. The catalog is cached for 45 seconds and prices for 15 seconds, and responses say how old their data is.
+- The tools are on only when the `PANTA_API_KEY` secret is set. Otherwise they are hidden, and `GET /health` says why. Endpoints, shapes, attribution and open questions: [docs/PANTA.md](docs/PANTA.md).
+
+```bash
+node scripts/demo-markets.mjs --q bitcoin            # search, brief and quote, paid on Solana (~0.017 USDC)
+node scripts/demo-markets.mjs --q bitcoin --build    # also builds the unsigned transaction (+0.01); never signs or sends it
+```
 
 ## Networks
 
@@ -94,7 +117,7 @@ The trade-off: that key has to live in the Worker, as the secret `ARC_SELLER_KEY
 
 ```bash
 npm install
-npm test                    # no network needed: the facilitators are mocked
+npm test                    # no network needed: the facilitators and Panta are mocked
 npx wrangler dev            # local
 ```
 
@@ -103,6 +126,7 @@ Deploy: set `account_id` and at least one receiving address in `wrangler.toml` (
 ```bash
 node scripts/new-arc-wallet.mjs            # Arc only: prints the new address; the key goes to .env.arc-seller
 npx wrangler secret put ARC_SELLER_KEY     # paste the key from .env.arc-seller
+npx wrangler secret put PANTA_API_KEY      # optional: a pk_live_... key switches the prediction-market tools on
 npx wrangler deploy
 node scripts/sweep-arc.mjs --to 0xYourColdWallet          # later, regularly: shows what it would send
 node scripts/sweep-arc.mjs --to 0xYourColdWallet --yes    # sends it
@@ -117,8 +141,10 @@ node scripts/sweep-arc.mjs --to 0xYourColdWallet --yes    # sends it
 | `CIRCLE_API_KEY` (secret) | Arc | fallback only, used when `ARC_SELLER_KEY` is not set |
 | `FACILITATOR_URL` | Base, Solana | default `https://facilitator.payai.network` |
 | `FACILITATOR_URL_ARC` | Arc | default `https://api.circle.com/v1/facilitator/x402` |
+| `PANTA_API_KEY` (secret) | all | switches the prediction-market tools on: `npx wrangler secret put PANTA_API_KEY` (see [docs/PANTA.md](docs/PANTA.md#getting-a-key)) |
+| `PANTA_BASE_URL` | all | default `https://live-api.panta.market/api/v1` |
 
-Leave an address empty to switch that network off. `GET /health` shows which networks are active and why the others are not. For Arc it also shows the auth mode, the receiving address and the trial status.
+Leave an address empty to switch that network off. `GET /health` shows which networks are active and why the others are not, and whether the Panta tools are on. For Arc it also shows the auth mode, the receiving address and the trial status.
 
 ## License
 

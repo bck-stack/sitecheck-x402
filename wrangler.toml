@@ -16,6 +16,9 @@ PAY_TO_SOLANA = ""   # Solana: wallet address (base58) that already has a USDC t
 PAY_TO_ARC = ""      # Arc: optional with ARC_SELLER_KEY (must then equal its address); required with CIRCLE_API_KEY
 FACILITATOR_URL = "https://facilitator.payai.network"               # Base and Solana
 FACILITATOR_URL_ARC = "https://api.circle.com/v1/facilitator/x402"  # Arc (Circle Facilitator Service)
+# Prediction-market tools (Panta). Switched on by a secret:  npx wrangler secret put PANTA_API_KEY
+# (a pk_live_... or pk_test_... key, see docs/PANTA.md). Without it the /api/markets routes are hidden.
+PANTA_BASE_URL = "https://live-api.panta.market/api/v1"
 
 [ai]
 binding = "AI"
