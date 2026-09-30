@@ -30,17 +30,22 @@ export const keylessEnv = (extra = {}) => fullEnv({ PAY_TO_ARC: "", CIRCLE_API_K
 
 const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 
-// Replaces globalThis.fetch. Facilitator calls are answered and recorded; anything else fails.
+// Replaces globalThis.fetch. Facilitator calls are answered and recorded; anything else fails, unless
+// `handle(call)` answers it (a Response, or undefined to fall through). See panta-mock.js.
 // `raw` keeps the request body exactly as sent (bytes), for checking seller proofs.
-export function mockFacilitators(t, { settle } = {}) {
+export function mockFacilitators(t, { settle, handle } = {}) {
   const calls = [];
-  const real = globalThis.fetch;
-  globalThis.fetch = async (input, init = {}) => {
+  // Always restore the real fetch, even when a test installs the mock more than once.
+  const real = globalThis.fetch.original ?? globalThis.fetch;
+  globalThis.fetch = Object.assign(async (input, init = {}) => {
     const url = String(input instanceof Request ? input.url : input);
     const headers = Object.fromEntries(new Headers(init.headers).entries());
     const raw = typeof init.body === "string" ? new TextEncoder().encode(init.body) : init.body;
     const body = raw ? JSON.parse(new TextDecoder().decode(raw)) : undefined;
-    calls.push({ url, method: init.method || "GET", headers, body, raw });
+    const call = { url, method: init.method || "GET", headers, body, raw };
+    calls.push(call);
+    const handled = handle && await handle(call);
+    if (handled) return handled;
     if (url === `${PAYAI_URL}/supported`) {
       return json({
         kinds: [
@@ -67,7 +72,7 @@ export function mockFacilitators(t, { settle } = {}) {
       return answer instanceof Response ? answer : json(answer);
     }
     throw new Error(`unexpected network call in test: ${url}`);
-  };
+  }, { original: real });
   t.after(() => { globalThis.fetch = real; });
   return {
     calls,
