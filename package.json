@@ -21,6 +21,7 @@
   "license": "MIT",
   "description": "Pay-per-call AI and web tools for agents on Cloudflare Workers, paid with x402 in USDC on Base, Solana or Arc.",
   "dependencies": {
+    "@coinbase/x402": "^2.1.0",
     "@solana/kit": "^5.5.1",
     "@x402/core": "^2.27.0",
     "@x402/evm": "^2.27.0",

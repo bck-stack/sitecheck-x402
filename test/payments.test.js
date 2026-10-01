@@ -176,3 +176,11 @@ test("RapidAPI proxy secret skips x402 only on the audit and contacts routes", a
   }
   assert.equal((await call(app, "POST /api/embed", env, ok)).status, 402);
 });
+
+test("CDP keys move Base and Solana to the Coinbase facilitator; Arc stays on Circle", async () => {
+  const { paymentNetworks } = await import("../lib/networks.js");
+  const off = paymentNetworks(fullEnv()).active;
+  assert.ok(off.filter((n) => n.key !== "arc").every((n) => n.facilitator === "payai"));
+  const on = paymentNetworks(fullEnv({ CDP_API_KEY_ID: "id", CDP_API_KEY_SECRET: "secret" })).active;
+  assert.deepEqual(on.map((n) => [n.key, n.facilitator]), off.map((n) => [n.key, n.key === "arc" ? n.facilitator : "cdp"]));
+});
