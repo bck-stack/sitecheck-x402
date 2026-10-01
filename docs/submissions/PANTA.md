@@ -52,7 +52,7 @@ https://api.sitecheck-api.workers.dev
 https://x.com/offerastudio
 
 **Link to your pitch deck or Loom/video presentation**
-`[demo video link: Loom or YouTube]`
+https://youtu.be/QvH-gbLQSr4
 
 **Did you submit this project to the official Crypto World's Fair on Colosseum? (Yes/No)**
 Yes
