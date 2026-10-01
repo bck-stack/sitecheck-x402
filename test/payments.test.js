@@ -163,3 +163,16 @@ test("paymentNetworks trims values and reports why a network is off", () => {
     { key: "arc", reason: "PAY_TO_ARC is not a valid Arc address" },
   ]);
 });
+
+test("RapidAPI proxy secret skips x402 only on the audit and contacts routes", async (t) => {
+  mockFacilitators(t);
+  const app = createApp();
+  const env = fullEnv({ RAPIDAPI_PROXY_SECRET: "rapid-secret-123" });
+  const ok = { "x-rapidapi-proxy-secret": "rapid-secret-123" };
+  for (const route of ["GET /api/audit", "GET /api/contacts"]) {
+    assert.notEqual((await call(app, route, env, ok)).status, 402, route);
+    assert.equal((await call(app, route, env, { "x-rapidapi-proxy-secret": "wrong-secret-12" })).status, 402, route);
+    assert.equal((await call(app, route, fullEnv(), ok)).status, 402, `${route} without a configured secret`);
+  }
+  assert.equal((await call(app, "POST /api/embed", env, ok)).status, 402);
+});
