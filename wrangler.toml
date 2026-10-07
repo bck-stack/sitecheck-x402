@@ -19,6 +19,12 @@ FACILITATOR_URL_ARC = "https://api.circle.com/v1/facilitator/x402"  # Arc (Circl
 # Prediction-market tools (Panta). Switched on by a secret:  npx wrangler secret put PANTA_API_KEY
 # (a pk_live_... or pk_test_... key, see docs/PANTA.md). Without it the /api/markets routes are hidden.
 PANTA_BASE_URL = "https://live-api.panta.market/api/v1"
+# Business and compliance tools (lib/violations.js, lib/ukInsolvency.js). Both secrets are optional:
+#   npx wrangler secret put DOL_API_KEY               US Department of Labor API v4 key (https://dataportal.dol.gov/registration): switches OSHA on in /api/violations.
+#                                                     Without it that route answers with EPA ECHO data only and says OSHA is off.
+#   npx wrangler secret put COMPANIES_HOUSE_API_KEY   Companies House REST key (https://developer.company-information.service.gov.uk): adds company status,
+#                                                     incorporation date, SIC codes and address to up to 10 rows of /api/uk-insolvency.
+# The other new tools (VAT/VIES, IBAN, GLEIF, recalls) need no key.
 
 [ai]
 binding = "AI"
