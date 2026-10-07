@@ -158,3 +158,4 @@ Real x402 settlements on all three networks:
 - Base (our test): https://basescan.org/tx/0xf4e4a1aeeff698706e49cd921321cda9dba79babefd00b624bdf836fda57beb1
 - Arc (our test): https://explorer.arc.io/tx/0xb6abceb6108099730c31b00f9140288585a869029bc5c922b88f0df5e8289476
 - Base, paid by an outside AI agent we don't control (one of its 12 paid calls so far): https://basescan.org/tx/0x9e37d0287f04f7c1f89f159f839c0f391230dab6c21aeead58d6a29588239ea9
+- Base, paid by a second outside wallet (6 Oct 2026): https://basescan.org/tx/0x9d5f1cae2c5016f165eead7dc56f51a3d74a1ea90a06270d4b0ca8bf97d8d211
