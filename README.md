@@ -2,7 +2,7 @@
 
 **Live:** https://api.sitecheck-api.workers.dev · listed on [x402scan](https://www.x402scan.com) · discovery: `/.well-known/x402`, `/openapi.json`
 
-SiteCheck is a small API that AI agents can use **without an account or API key**. Besides its AI and web tools, it sells prediction-market data and unsigned trade transactions [powered by Panta](#prediction-markets-panta). Every call is paid per request in **USDC** with the [x402](https://x402.org) protocol, on **Base**, **Solana** or **Arc** (Circle's L1), whichever the buyer holds USDC on. Call it, get a `402 Payment Required` listing the price on each network, sign the payment and get the result. It runs on Cloudflare Workers and Workers AI.
+SiteCheck is a small API that AI agents can use **without an account or API key**: 18 pay-per-call tools in all. Besides its AI and web tools, it sells [business and compliance data](#business-and-compliance-data) (EU VAT, IBAN, LEI, US recalls, OSHA/EPA enforcement, UK insolvency notices), prediction-market data and unsigned trade transactions [powered by Panta](#prediction-markets-panta). Every call is paid per request in **USDC** with the [x402](https://x402.org) protocol, on **Base**, **Solana** or **Arc** (Circle's L1), whichever the buyer holds USDC on. Call it, get a `402 Payment Required` listing the price on each network, sign the payment and get the result. It runs on Cloudflare Workers and Workers AI.
 
 | Endpoint | Price | What it does |
 |---|---|---|
@@ -14,6 +14,12 @@ SiteCheck is a small API that AI agents can use **without an account or API key*
 | `POST /api/transcribe` | $0.01 | Whisper large-v3-turbo speech-to-text |
 | `POST /api/tts` | $0.02 | Deepgram Aura-2 text-to-speech |
 | `POST /api/embed` | $0.001 | BGE-M3 embeddings (1024-d, multilingual) |
+| `GET /api/vat?number=` | $0.002 | EU VAT number check: format and checksum locally, then the official VIES service (27 EU states + Northern Ireland) |
+| `GET /api/iban?iban=` | $0.001 | IBAN validation with no network call: registry structure and length, mod-97, national check digits, bank/branch/account split; `ibans=` for up to 50 |
+| `GET /api/lei?q=` | $0.005 | GLEIF lookup by LEI or company name: status, registration, parents, children, one-line `kycSummary` |
+| `GET /api/recalls?q=&source=&since=&classification=&limit=` | $0.003 | US product recalls from openFDA and CPSC in one schema, with a high/medium/low severity |
+| `GET /api/violations?company=&state=&since=&minPenalty=&source=&limit=` | $0.005 | US enforcement cases: OSHA (DOL API, needs a key on the deployment) and EPA ECHO, with official record links |
+| `GET /api/uk-insolvency?since=&q=&postcode=&type=&limit=` | $0.003 | UK company insolvency notices from The Gazette (our nightly cache of the last 8 days), optional Companies House enrichment |
 
 ## Prediction markets (Panta)
 
@@ -36,6 +42,25 @@ Agents can buy market intelligence and ready-to-sign trade transactions per call
 ```bash
 node scripts/demo-markets.mjs --q bitcoin            # search, brief and quote, paid on Solana (~0.017 USDC)
 node scripts/demo-markets.mjs --q bitcoin --build    # also builds the unsigned transaction (+0.01); never signs or sends it
+```
+
+## Business and compliance data
+
+Six tools for an agent that has to check a counterparty before it trades with it. All of them read free official sources (or our own cache of one), need no key from the caller, and follow the same rule as every route here: **a call that fails (bad input, upstream down, timeout) returns 4xx/5xx and is not settled, so the buyer is not charged.**
+
+| Tool | Source | Terms |
+|---|---|---|
+| `/api/vat` | European Commission [VIES](https://ec.europa.eu/taxation_customs/vies/) REST API | Public service of the Commission. A member state that is down gives HTTP 503 with a `viesStatus` such as `MS_UNAVAILABLE`, so an unknown answer is never reported as "invalid". Some states (e.g. DE, ES) confirm validity but do not disclose name and address: those fields are `null`. |
+| `/api/iban` | Computed locally from the SWIFT IBAN registry structure (release 101) | No network, no bank-name or BIC lookup (no open dataset is bundled; the response says `bankLookup: false`). National check digits are applied only where a public algorithm exists (FR, ES, IT, BE, NL for ABNA/INGB/RABO, NO, FI, PL, PT, RS, ME, MK, XK, SI); other countries report `not-available`. Germany has no general national algorithm. |
+| `/api/lei` | [GLEIF](https://www.gleif.org/en/lei-data/gleif-api) Global LEI Index | CC0 public domain. No key. |
+| `/api/recalls` | [openFDA](https://open.fda.gov/terms/) enforcement reports (food, drug, device) and the CPSC [SaferProducts.gov](https://www.saferproducts.gov/) Recall API | openFDA data is public domain under its terms of use (not for medical decisions). CPSC does not classify recalls: its severity is derived from the hazard text, FDA Class I/II/III maps to high/medium/low. |
+| `/api/violations` | US Department of Labor [Data API v4](https://dataportal.dol.gov/) (OSHA) and [EPA ECHO](https://echo.epa.gov/tools/web-services) | US government works. OSHA needs the optional `DOL_API_KEY` secret: without it the route returns EPA only and says OSHA is off. Records are matched by name and show inspections and cases, not guilt. |
+| `/api/uk-insolvency` | [The Gazette](https://www.thegazette.co.uk), through our own nightly cache (`gazette-cache.sitecheck-api.workers.dev`, last 8 UK days). The Gazette is never called directly. | [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). Answers carry the cache's `dataTimestamp` and any `missingDays`. Optional [Companies House](https://developer.company-information.service.gov.uk/) enrichment (status, incorporation date, SIC codes, address; at most 10 rows per call) when `COMPANIES_HOUSE_API_KEY` is set. |
+
+Workers limits are respected: every upstream call has a timeout (at most 10 s) and a `SiteCheck/1.x` User-Agent, every tool stays well under 50 subrequests, and nothing large is parsed per request (the Gazette text is scanned and only matching notices are parsed). Stable upstream answers are cached with the Cache API where it works.
+
+```bash
+curl -s "https://api.sitecheck-api.workers.dev/api/vat?number=DE811907980"        # 402 first: pay with any x402 client
 ```
 
 ## Networks
@@ -127,6 +152,8 @@ Deploy: set `account_id` and at least one receiving address in `wrangler.toml` (
 node scripts/new-arc-wallet.mjs            # Arc only: prints the new address; the key goes to .env.arc-seller
 npx wrangler secret put ARC_SELLER_KEY     # paste the key from .env.arc-seller
 npx wrangler secret put PANTA_API_KEY      # optional: a pk_live_... key switches the prediction-market tools on
+npx wrangler secret put DOL_API_KEY        # optional: switches OSHA on in /api/violations
+npx wrangler secret put COMPANIES_HOUSE_API_KEY   # optional: enriches /api/uk-insolvency rows
 npx wrangler deploy
 node scripts/sweep-arc.mjs --to 0xYourColdWallet          # later, regularly: shows what it would send
 node scripts/sweep-arc.mjs --to 0xYourColdWallet --yes    # sends it
@@ -143,6 +170,8 @@ node scripts/sweep-arc.mjs --to 0xYourColdWallet --yes    # sends it
 | `FACILITATOR_URL_ARC` | Arc | default `https://api.circle.com/v1/facilitator/x402` |
 | `PANTA_API_KEY` (secret) | all | switches the prediction-market tools on: `npx wrangler secret put PANTA_API_KEY` (see [docs/PANTA.md](docs/PANTA.md#getting-a-key)) |
 | `PANTA_BASE_URL` | all | default `https://live-api.panta.market/api/v1` |
+| `DOL_API_KEY` (secret) | all | optional: switches OSHA on in `/api/violations`: `npx wrangler secret put DOL_API_KEY`. Without it the route is EPA only |
+| `COMPANIES_HOUSE_API_KEY` (secret) | all | optional: Companies House enrichment in `/api/uk-insolvency`: `npx wrangler secret put COMPANIES_HOUSE_API_KEY` |
 
 Leave an address empty to switch that network off. `GET /health` shows which networks are active and why the others are not, and whether the Panta tools are on. For Arc it also shows the auth mode, the receiving address and the trial status.
 
