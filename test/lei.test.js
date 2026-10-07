@@ -62,6 +62,7 @@ test("by name: best match first, up to 5 alternatives", async (t) => {
   mockFetch(t, [
     ...base,
     [`lei-records/${SIEMENS}/direct-parent-reporting-exception`, NOT_FOUND], [`lei-records/${SIEMENS}/ultimate-parent-reporting-exception`, NOT_FOUND], [/-parent$/, NOT_FOUND],
+    ["filter%5Bentity.legalName%5D=Siemens", { data: [] }],
     ["filter%5Bfulltext%5D=Siemens", { data }],
   ]);
   const b = await (await callTool("/api/lei?q=Siemens%20Aktiengesellschaft")).json();
