@@ -44,7 +44,7 @@ test("OSHA: key goes in X-API-KEY, penalties are summed from violations, link is
   const first = new URL(calls[0].url);
   assert.equal(first.searchParams.get("X-API-KEY"), KEY);
   const f = JSON.parse(first.searchParams.get("filter_object"));
-  assert.deepEqual(f.and.map((x) => [x.field, x.operator, x.value]), [["open_date", "gt", "2026-01-01"], ["estab_name", "like", "Acme"], ["site_state", "eq", "TX"]]);
+  assert.deepEqual(f.and.map((x) => [x.field, x.operator, x.value]), [["open_date", "gt", "2026-01-01"], ["estab_name", "like", "%ACME%"], ["site_state", "eq", "TX"]]);
   assert.match(calls[0].headers["user-agent"], /^SiteCheck\/1\.x/);
 });
 
