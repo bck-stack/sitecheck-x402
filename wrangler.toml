@@ -28,3 +28,9 @@ PANTA_BASE_URL = "https://live-api.panta.market/api/v1"
 
 [ai]
 binding = "AI"
+
+# The UK insolvency tool reads the Gazette cache Worker (same account) through a service binding:
+# Workers on one account cannot fetch each other's workers.dev URLs.
+[[services]]
+binding = "GAZETTE"
+service = "gazette-cache"
