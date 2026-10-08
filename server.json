@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.bck-stack/sitecheck",
+  "title": "SiteCheck",
+  "description": "29 pay-per-call agent tools: web reader, PDF, tech stack, email, domain, Solana, KYB. Paid via x402",
+  "version": "1.2.0",
+  "websiteUrl": "https://api.sitecheck-api.workers.dev",
+  "repository": {
+    "url": "https://github.com/bck-stack/sitecheck-x402",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.sitecheck-api.workers.dev/mcp"
+    }
+  ]
+}
