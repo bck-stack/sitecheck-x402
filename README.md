@@ -1,6 +1,8 @@
 # SiteCheck: pay-per-call tools for AI agents (x402 on Base, Solana and Arc)
 
-**Live:** https://api.sitecheck-api.workers.dev · listed on [x402scan](https://www.x402scan.com) · discovery: `/.well-known/x402`, `/openapi.json`
+[![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/bck-stack/sitecheck-x402)
+
+**Live:** https://api.sitecheck-api.workers.dev · listed on [x402scan](https://www.x402scan.com), the official [MCP Registry](https://registry.modelcontextprotocol.io) (`io.github.bck-stack/sitecheck`), [Smithery](https://smithery.ai/server/bolat/sitecheck) and [mcpservers.org](https://mcpservers.org/servers/bck-stack/sitecheck-x402) · MCP: `/mcp` · discovery: `/.well-known/x402`, `/openapi.json`
 
 SiteCheck is a small API that AI agents can use **without an account or API key**: 29 pay-per-call tools in all. Besides its AI and web tools (including a [web page to Markdown reader](#web-documents-e-mail-domain-and-solana-data)), it sells PDF to text, translation, tech stack detection, sitemap URLs, exchange rates, e-mail, domain and Solana token and wallet data, [business and compliance data](#business-and-compliance-data) (EU VAT, IBAN, LEI, US recalls, OSHA/EPA enforcement, UK insolvency notices), prediction-market data and unsigned trade transactions [powered by Panta](#prediction-markets-panta). Every call is paid per request in **USDC** with the [x402](https://x402.org) protocol, on **Base**, **Solana** or **Arc** (Circle's L1), whichever the buyer holds USDC on. Call it, get a `402 Payment Required` listing the price on each network, sign the payment and get the result. It runs on Cloudflare Workers and Workers AI.
 
