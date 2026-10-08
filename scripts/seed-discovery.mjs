@@ -69,8 +69,14 @@ for (const p of plan) {
   const res = await pay(p.url, p.body ? { method: p.method, headers: { "content-type": "application/json" }, body: JSON.stringify(p.body) } : { method: p.method });
   const receipt = res.headers.get("payment-response");
   const tx = receipt ? decodePaymentResponseHeader(receipt)?.transaction : null;
-  await res.text();
+  const text = await res.text();
   if (res.ok && tx) { ok++; spent += p.price; }
   console.log(`  ${res.ok && tx ? "paid" : `HTTP ${res.status}, not charged`}  ${p.method} ${p.path}${tx ? `  https://basescan.org/tx/${tx}` : ""}`);
+  if (!res.ok) {
+    // Why it failed: the 402's own error (verification or settlement) and the body.
+    let why = null;
+    try { why = JSON.parse(Buffer.from(res.headers.get("payment-required") || "", "base64").toString("utf8")).error; } catch { /* no header */ }
+    console.log(`      reason: ${why ?? "-"} | body: ${text.slice(0, 300)}`);
+  }
 }
 console.log(`\nDone: ${ok}/${plan.length} paid, $${spent.toFixed(3)} spent (to our own PAY_TO). New entries appear in PayAI discovery within minutes.`);
