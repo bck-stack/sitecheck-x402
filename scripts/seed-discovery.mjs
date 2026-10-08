@@ -14,8 +14,12 @@ const args = process.argv.slice(2);
 const API = "https://api.sitecheck-api.workers.dev";
 const MAX = Number(args[args.indexOf("--max") + 1]) || 0.15;
 const BASE = "eip155:8453";
-// Not seeded: the prediction-market buy routes need a live market, a wallet and an order.
-const SKIP = new Set(["/api/markets/build-buy", "/api/markets/report", "/api/markets/quote"]);
+// /api/markets/report is free (nothing to list). build-buy and quote need a live market: the id is looked up first with
+// a paid /api/markets search, and the wallet is our own Solana PAY_TO. build-buy only returns an UNSIGNED transaction;
+// nothing is signed or sent, so no trade happens.
+const SKIP = new Set(["/api/markets/report"]);
+const MARKET_ROUTES = new Set(["/api/markets/build-buy", "/api/markets/quote"]);
+const SOLANA_WALLET = "J8vnmBx4pS1X7UUBTfz1yWBKiw69Dj2yRGRHDaXBRdhR";
 
 // Base and Solana settle through Coinbase's CDP facilitator when its keys are set (they are), which catalogs routes in
 // the x402 Bazaar; older settlements went through PayAI. A route counts as listed if either list has it.
@@ -55,7 +59,10 @@ for (const [path, ops] of Object.entries(spec.paths)) {
     plan.push({ method: method.toUpperCase(), path, price, url: `${API}${path}${[...query].length ? `?${query}` : ""}`, body });
   }
 }
-const total = plan.reduce((s, p) => s + p.price, 0);
+const needsMarket = plan.some((p) => MARKET_ROUTES.has(p.path));
+const searchPrice = needsMarket ? Number(spec.paths["/api/markets"].get["x-payment-info"].price.amount) : 0;
+if (needsMarket) console.log(`(market routes first look up one open market with GET /api/markets: +$${searchPrice.toFixed(3)})`);
+const total = plan.reduce((s, p) => s + p.price, 0) + searchPrice;
 console.log(`Already listed (Bazaar or PayAI): ${[...listed].sort().join(", ") || "none"}`);
 console.log(`To seed (${plan.length}, total $${total.toFixed(3)}):`);
 for (const p of plan) console.log(`  $${p.price.toFixed(3)}  ${p.method} ${p.path}`);
@@ -65,7 +72,16 @@ if (total > MAX) { console.error(`\nTotal $${total.toFixed(3)} is above the cap 
 const signer = privateKeyToAccount(readFileSync(".env.evm", "utf8").trim());
 const pay = wrapFetchWithPayment(fetch, x402Client.fromConfig({ schemes: [{ network: BASE, client: new ExactEvmScheme(signer) }] }));
 let spent = 0, ok = 0;
+if (needsMarket) {
+  const r = await pay(`${API}/api/markets?status=primary&limit=5`);
+  const found = await r.json().catch(() => ({}));
+  const market = (found.results || []).find((m) => m.buyable !== false) || found.results?.[0];
+  if (r.ok) spent += searchPrice;
+  console.log(`  ${r.ok ? "paid" : `HTTP ${r.status}`}  GET /api/markets  -> ${market ? `market ${market.id}: ${String(market.question).slice(0, 60)}` : "no open market found"}`);
+  for (const p of plan) if (MARKET_ROUTES.has(p.path)) p.body = market ? { id: market.id, side: "yes", amountUsdc: "1.00", wallet: SOLANA_WALLET, ...(p.path.endsWith("build-buy") ? { maxSlippageBps: 100 } : {}) } : null;
+}
 for (const p of plan) {
+  if (MARKET_ROUTES.has(p.path) && !p.body) { console.log(`  skipped  ${p.method} ${p.path} (no open market)`); continue; }
   const res = await pay(p.url, p.body ? { method: p.method, headers: { "content-type": "application/json" }, body: JSON.stringify(p.body) } : { method: p.method });
   const receipt = res.headers.get("payment-response");
   const tx = receipt ? decodePaymentResponseHeader(receipt)?.transaction : null;
@@ -79,4 +95,4 @@ for (const p of plan) {
     console.log(`      reason: ${why ?? "-"} | body: ${text.slice(0, 300)}`);
   }
 }
-console.log(`\nDone: ${ok}/${plan.length} paid, $${spent.toFixed(3)} spent (to our own PAY_TO). New entries appear in PayAI discovery within minutes.`);
+console.log(`\nDone: ${ok}/${plan.length} paid, $${spent.toFixed(3)} spent (to our own PAY_TO). New entries appear in the x402 Bazaar within minutes.`);
