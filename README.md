@@ -88,6 +88,28 @@ Workers limits are respected: every upstream call has a timeout (at most 10 s) a
 curl -s "https://api.sitecheck-api.workers.dev/api/vat?number=DE811907980"        # 402 first: pay with any x402 client
 ```
 
+## MCP server
+
+`https://api.sitecheck-api.workers.dev/mcp` is a remote MCP server (Streamable HTTP, stateless, JSON answers). Every paid endpoint is an MCP tool with the same input schema (`read`, `pdf`, `tech`, `email_check`, `domain`, `solana_token`, `vat`, `lei`, ...), and the same price.
+
+Payment uses the x402 MCP transport: a `tools/call` without payment returns `isError` with the x402 `PaymentRequired` object in `structuredContent`; the client signs one option and repeats the call with the `PaymentPayload` in `params._meta["x402/payment"]`; the answer carries the settlement in `result._meta["x402/payment-response"]`. A tool call that fails is not settled. Each call is replayed inside the Worker against the matching `/api` route, so MCP and HTTP buyers go through the same payment checks.
+
+```ts
+import { createx402MCPClient } from "@x402/mcp";
+import { ExactEvmScheme } from "@x402/evm/exact/client";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+
+const client = createx402MCPClient({
+  name: "my-agent", version: "1.0.0",
+  schemes: [{ network: "eip155:8453", client: new ExactEvmScheme(account) }], // a viem account holding USDC on Base
+  autoPayment: true,
+});
+await client.connect(new StreamableHTTPClientTransport(new URL("https://api.sitecheck-api.workers.dev/mcp")));
+const page = await client.callTool("read", { url: "https://docs.x402.org/introduction" }); // pays $0.002
+```
+
+MCP clients without x402 support (for example a plain remote connector) can list the tools and see each price, but a call returns the payment requirements instead of a result.
+
 ## Networks
 
 | Network | CAIP-2 | USDC | Facilitator |
