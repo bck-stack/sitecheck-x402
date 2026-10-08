@@ -67,3 +67,8 @@ test("solana wallet: Jupiter holdings, prices and names; dust hidden", async (t)
   assert.deepEqual([r.sol.valueUsd, r.totalValueUsd, r.tokensShown, r.hiddenDustOrUnpriced, r.tokens[0].symbol], [200, 205, 1, 1, "USDC"]);
   assert.equal(await statusOf(solanaWallet({ address: "0xabc" }, {})), 400);
 });
+
+test("every route description fits the 500-character limit Coinbase's facilitator enforces on resource.description", async () => {
+  const { CATALOG, MARKET_CATALOG } = await import("../lib/routes.js");
+  for (const [route, t] of Object.entries({ ...CATALOG, ...MARKET_CATALOG })) assert.ok(t.description.length <= 500, `${route}: ${t.description.length} chars`);
+});
