@@ -18,7 +18,7 @@ test("the six business routes are in /openapi.json, /.well-known/x402, llms.txt 
     assert.ok(op, `${path} in openapi`);
     assert.equal(op["x-payment-info"].price.amount, price, path);
     assert.equal(op["x-payment-info"].protocols[0].x402.networks[0].amount, atomic(price), path);
-    assert.ok(op.parameters.length > 0 && op.responses[200].content["application/json"].example, path);
+    assert.ok(op.parameters.length > 0 && (op.responses[200].content["application/json"].example || op.responses[200].content["application/json"].examples?.single), path);
     const ep = wk.endpoints.find((e) => e.url.endsWith(path));
     assert.ok(ep, `${path} in /.well-known/x402`);
     assert.deepEqual([ep.method, ep.price, ep.amount], ["GET", `$${price}`, atomic(price)]);
