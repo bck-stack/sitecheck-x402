@@ -1,0 +1,2031 @@
+{
+ "version": 1,
+ "description": "Own fingerprints for website-tech-stack-detector (MIT licence, same as this repository). Not derived from the GPL-licensed Wappalyzer data. Each pattern names a file path, host, header, cookie, meta tag or DNS record that the product itself produces. Matchers: html (regex on the page source), scripts (regex on script, link and iframe URLs), meta (meta tag name to regex on content), headers (response header to regex), cookies (regex on cookie names), mx / txt (regex on MX host names / TXT record text). version: regex with one capture group, tried on the evidence that matched.",
+ "technologies": [
+  {
+   "name": "WordPress",
+   "category": "CMS",
+   "meta": {
+    "generator": "^WordPress(?:\\s+([\\d.]+))?"
+   },
+   "html": [
+    "/wp-content/",
+    "/wp-includes/"
+   ],
+   "scripts": [
+    "/wp-(?:content|includes)/"
+   ],
+   "headers": {
+    "link": "rel=\"https://api\\.w\\.org/\"",
+    "x-pingback": "xmlrpc\\.php"
+   },
+   "version": "wp-(?:includes|emoji-release)[^\"\\']*?\\?ver=([\\d.]+)"
+  },
+  {
+   "name": "WooCommerce",
+   "category": "Ecommerce",
+   "html": [
+    "/plugins/woocommerce/",
+    "class=\"[^\"]*\\bwoocommerce\\b"
+   ],
+   "scripts": [
+    "/plugins/woocommerce/"
+   ],
+   "meta": {
+    "generator": "^WooCommerce(?:\\s+([\\d.]+))?"
+   },
+   "cookies": [
+    "^woocommerce_(?:cart_hash|items_in_cart)$"
+   ]
+  },
+  {
+   "name": "Drupal",
+   "category": "CMS",
+   "meta": {
+    "generator": "^Drupal(?:\\s+([\\d.]+))?"
+   },
+   "html": [
+    "data-drupal-",
+    "/sites/default/files/",
+    "Drupal\\.settings"
+   ],
+   "headers": {
+    "x-generator": "^Drupal(?:\\s+([\\d.]+))?",
+    "x-drupal-cache": "."
+   }
+  },
+  {
+   "name": "Joomla",
+   "category": "CMS",
+   "meta": {
+    "generator": "^Joomla!?(?:\\s+([\\d.]+))?"
+   },
+   "html": [
+    "/media/jui/",
+    "/components/com_[a-z]+/"
+   ]
+  },
+  {
+   "name": "TYPO3",
+   "category": "CMS",
+   "meta": {
+    "generator": "^TYPO3(?:\\s+([\\d.]+))?"
+   },
+   "html": [
+    "/typo3conf/",
+    "/typo3temp/"
+   ]
+  },
+  {
+   "name": "Ghost",
+   "category": "CMS",
+   "meta": {
+    "generator": "^Ghost(?:\\s+([\\d.]+))?"
+   },
+   "html": [
+    "/ghost/api/(?:content|admin)/",
+    "data-ghost-|ghost-portal-root"
+   ],
+   "headers": {
+    "x-ghost-cache-status": "."
+   }
+  },
+  {
+   "name": "Contao",
+   "category": "CMS",
+   "meta": {
+    "generator": "^Contao"
+   }
+  },
+  {
+   "name": "Craft CMS",
+   "category": "CMS",
+   "headers": {
+    "x-powered-by": "Craft CMS"
+   },
+   "cookies": [
+    "^CraftSessionId$"
+   ],
+   "html": [
+    "/cpresources/"
+   ]
+  },
+  {
+   "name": "Hugo",
+   "category": "CMS",
+   "meta": {
+    "generator": "^Hugo(?:\\s+([\\d.]+))?"
+   }
+  },
+  {
+   "name": "Jekyll",
+   "category": "CMS",
+   "meta": {
+    "generator": "^Jekyll(?:\\s+v?([\\d.]+))?"
+   }
+  },
+  {
+   "name": "Docusaurus",
+   "category": "CMS",
+   "meta": {
+    "generator": "^Docusaurus(?:\\s+(?:v)?([\\d.]+))?"
+   }
+  },
+  {
+   "name": "MediaWiki",
+   "category": "CMS",
+   "meta": {
+    "generator": "^MediaWiki(?:\\s+([\\d.]+))?"
+   },
+   "html": [
+    "/load\\.php\\?"
+   ]
+  },
+  {
+   "name": "Webflow",
+   "category": "Website builder",
+   "html": [
+    "data-wf-(?:page|site)=",
+    "assets\\.website-files\\.com",
+    "cdn\\.prod\\.website-files\\.com"
+   ],
+   "meta": {
+    "generator": "^Webflow"
+   }
+  },
+  {
+   "name": "Wix",
+   "category": "Website builder",
+   "html": [
+    "static\\.wixstatic\\.com",
+    "static\\.parastorage\\.com"
+   ],
+   "headers": {
+    "x-wix-request-id": "."
+   },
+   "meta": {
+    "generator": "^Wix\\.com"
+   }
+  },
+  {
+   "name": "Squarespace",
+   "category": "Website builder",
+   "html": [
+    "static1\\.squarespace\\.com",
+    "Static\\.SQUARESPACE_CONTEXT"
+   ],
+   "meta": {
+    "generator": "^Squarespace"
+   }
+  },
+  {
+   "name": "Framer",
+   "category": "Website builder",
+   "html": [
+    "framerusercontent\\.com",
+    "data-framer-"
+   ],
+   "meta": {
+    "generator": "^Framer"
+   }
+  },
+  {
+   "name": "Weebly",
+   "category": "Website builder",
+   "html": [
+    "editmysite\\.com",
+    "weebly\\.com/files/"
+   ]
+  },
+  {
+   "name": "GoDaddy Website Builder",
+   "category": "Website builder",
+   "html": [
+    "img1\\.wsimg\\.com",
+    "websitebuilder\\.godaddy\\.com"
+   ],
+   "meta": {
+    "generator": "^Starfield Technologies|GoDaddy"
+   }
+  },
+  {
+   "name": "Elementor",
+   "category": "CMS",
+   "html": [
+    "/plugins/elementor/",
+    "elementor-(?:section|widget|element)"
+   ],
+   "meta": {
+    "generator": "^Elementor(?:\\s+([\\d.]+))?"
+   }
+  },
+  {
+   "name": "Divi",
+   "category": "CMS",
+   "html": [
+    "/themes/Divi/",
+    "et_pb_section"
+   ]
+  },
+  {
+   "name": "Gatsby",
+   "category": "JavaScript framework",
+   "meta": {
+    "generator": "^Gatsby(?:\\s+([\\d.]+))?"
+   },
+   "html": [
+    "id=\"___gatsby\""
+   ]
+  },
+  {
+   "name": "Astro",
+   "category": "JavaScript framework",
+   "meta": {
+    "generator": "^Astro(?:\\s+v?([\\d.]+))?"
+   },
+   "html": [
+    "data-astro-cid-",
+    "<astro-island"
+   ]
+  },
+  {
+   "name": "Shopify",
+   "category": "Ecommerce",
+   "html": [
+    "cdn\\.shopify\\.com",
+    "Shopify\\.theme",
+    "\\.myshopify\\.com"
+   ],
+   "scripts": [
+    "cdn\\.shopify\\.com"
+   ],
+   "headers": {
+    "x-shopify-stage": ".",
+    "x-shopid": ".",
+    "x-sorting-hat-shopid": "."
+   },
+   "cookies": [
+    "^_shopify_[a-z]+$",
+    "^cart_sig$"
+   ]
+  },
+  {
+   "name": "BigCommerce",
+   "category": "Ecommerce",
+   "html": [
+    "cdn\\d*\\.bigcommerce\\.com",
+    "bigcommerce\\.com/s-"
+   ],
+   "scripts": [
+    "bigcommerce\\.com"
+   ],
+   "cookies": [
+    "^SHOP_SESSION_TOKEN$"
+   ]
+  },
+  {
+   "name": "Magento",
+   "category": "Ecommerce",
+   "html": [
+    "Mage\\.Cookies",
+    "/static/version\\d+/frontend/",
+    "data-mage-init"
+   ],
+   "cookies": [
+    "^mage-cache-sessid$"
+   ],
+   "meta": {
+    "generator": "^Magento(?:\\s+([\\d.]+))?"
+   }
+  },
+  {
+   "name": "PrestaShop",
+   "category": "Ecommerce",
+   "meta": {
+    "generator": "^PrestaShop"
+   },
+   "html": [
+    "/modules/ps_[a-z]+/",
+    "prestashop\\.(?:cart|customer)"
+   ],
+   "cookies": [
+    "^PrestaShop-[a-f0-9]+$"
+   ]
+  },
+  {
+   "name": "OpenCart",
+   "category": "Ecommerce",
+   "html": [
+    "catalog/view/theme/",
+    "route=common/home"
+   ],
+   "cookies": [
+    "^OCSESSID$"
+   ]
+  },
+  {
+   "name": "Shopware",
+   "category": "Ecommerce",
+   "meta": {
+    "generator": "^Shopware(?:\\s+([\\d.]+))?"
+   },
+   "html": [
+    "/bundles/storefront/",
+    "shopware-(?:storefront|plugin)"
+   ],
+   "cookies": [
+    "^sw-states?$",
+    "^sw-context-token$"
+   ]
+  },
+  {
+   "name": "Salesforce Commerce Cloud",
+   "category": "Ecommerce",
+   "html": [
+    "/on/demandware\\.static/",
+    "demandware\\.store"
+   ],
+   "cookies": [
+    "^dwsid$"
+   ]
+  },
+  {
+   "name": "Ecwid",
+   "category": "Ecommerce",
+   "html": [
+    "app\\.ecwid\\.com",
+    "ecwid-(?:productBrowser|store)"
+   ],
+   "scripts": [
+    "ecwid\\.com"
+   ]
+  },
+  {
+   "name": "Lightspeed",
+   "category": "Ecommerce",
+   "html": [
+    "cdn\\.shoplightspeed\\.com",
+    "lightspeedhq\\.com/ecom"
+   ],
+   "scripts": [
+    "shoplightspeed\\.com"
+   ]
+  },
+  {
+   "name": "Snipcart",
+   "category": "Ecommerce",
+   "scripts": [
+    "cdn\\.snipcart\\.com"
+   ],
+   "html": [
+    "snipcart-"
+   ]
+  },
+  {
+   "name": "Shopify Hydrogen",
+   "category": "JavaScript framework",
+   "html": [
+    "hydrogen\\.shopify\\.dev|data-hydrogen"
+   ]
+  },
+  {
+   "name": "Next.js",
+   "category": "JavaScript framework",
+   "html": [
+    "__NEXT_DATA__",
+    "/_next/static/"
+   ],
+   "headers": {
+    "x-powered-by": "^Next\\.js(?:\\s+([\\d.]+))?",
+    "x-nextjs-cache": "."
+   },
+   "scripts": [
+    "/_next/static/"
+   ]
+  },
+  {
+   "name": "Nuxt",
+   "category": "JavaScript framework",
+   "html": [
+    "__NUXT__",
+    "/_nuxt/"
+   ],
+   "scripts": [
+    "/_nuxt/"
+   ]
+  },
+  {
+   "name": "SvelteKit",
+   "category": "JavaScript framework",
+   "html": [
+    "__sveltekit",
+    "/_app/immutable/"
+   ]
+  },
+  {
+   "name": "Remix",
+   "category": "JavaScript framework",
+   "html": [
+    "__remixContext",
+    "window\\.__remixManifest"
+   ]
+  },
+  {
+   "name": "Angular",
+   "category": "JavaScript framework",
+   "html": [
+    "\\sng-version=\"([\\d.]+)\"",
+    "<app-root"
+   ],
+   "version": "\\sng-version=\"([\\d.]+)\""
+  },
+  {
+   "name": "AngularJS",
+   "category": "JavaScript framework",
+   "html": [
+    "\\sng-app=",
+    "\\sng-controller="
+   ],
+   "scripts": [
+    "angular(?:\\.min)?\\.js"
+   ],
+   "version": "angular(?:js)?[/.@-]v?(1\\.[\\d.]+)"
+  },
+  {
+   "name": "React",
+   "category": "JavaScript library",
+   "html": [
+    "data-reactroot",
+    "data-reactid"
+   ],
+   "scripts": [
+    "react(?:-dom)?(?:\\.production)?(?:\\.min)?\\.js",
+    "/react@[\\d.]+/"
+   ],
+   "version": "react(?:-dom)?[/@-]v?(\\d+\\.\\d+\\.\\d+)"
+  },
+  {
+   "name": "Vue.js",
+   "category": "JavaScript framework",
+   "html": [
+    "\\sdata-v-[0-9a-f]{8}[\\s=>]",
+    "\\sdata-vue-meta"
+   ],
+   "scripts": [
+    "vue(?:\\.runtime)?(?:\\.global)?(?:\\.prod)?(?:\\.min)?\\.js",
+    "/vue@[\\d.]+/"
+   ],
+   "version": "vue[/@-]v?(\\d+\\.\\d+\\.\\d+)"
+  },
+  {
+   "name": "Svelte",
+   "category": "JavaScript framework",
+   "html": [
+    "class=\"svelte-[a-z0-9]+\""
+   ]
+  },
+  {
+   "name": "Alpine.js",
+   "category": "JavaScript library",
+   "html": [
+    "\\sx-data=\"",
+    "\\sx-init="
+   ],
+   "scripts": [
+    "alpinejs"
+   ]
+  },
+  {
+   "name": "htmx",
+   "category": "JavaScript library",
+   "html": [
+    "\\shx-(?:get|post|trigger|target)="
+   ],
+   "scripts": [
+    "htmx(?:\\.min)?\\.js"
+   ]
+  },
+  {
+   "name": "jQuery",
+   "category": "JavaScript library",
+   "scripts": [
+    "jquery[-.]?(?:\\d[\\d.]*)?(?:\\.min)?\\.js",
+    "/jquery/[\\d.]+/",
+    "jquery@[\\d.]+"
+   ],
+   "version": "jquery[-./@](\\d+\\.\\d+(?:\\.\\d+)?)"
+  },
+  {
+   "name": "jQuery UI",
+   "category": "JavaScript library",
+   "scripts": [
+    "jquery-ui"
+   ],
+   "version": "jquery-ui[-./@](\\d+\\.\\d+(?:\\.\\d+)?)"
+  },
+  {
+   "name": "Lodash",
+   "category": "JavaScript library",
+   "scripts": [
+    "lodash(?:\\.min)?\\.js",
+    "/lodash@[\\d.]+/"
+   ],
+   "version": "lodash[-./@](\\d+\\.\\d+\\.\\d+)"
+  },
+  {
+   "name": "GSAP",
+   "category": "JavaScript library",
+   "scripts": [
+    "gsap(?:\\.min)?\\.js",
+    "TweenMax"
+   ],
+   "version": "gsap[-./@](\\d+\\.\\d+\\.\\d+)"
+  },
+  {
+   "name": "Three.js",
+   "category": "JavaScript library",
+   "scripts": [
+    "three(?:\\.module)?(?:\\.min)?\\.js"
+   ]
+  },
+  {
+   "name": "Bootstrap",
+   "category": "UI framework",
+   "scripts": [
+    "bootstrap(?:\\.bundle)?(?:\\.min)?\\.(?:css|js)",
+    "/bootstrap@[\\d.]+/",
+    "/bootstrap/[\\d.]+/"
+   ],
+   "version": "bootstrap[-./@](\\d+\\.\\d+(?:\\.\\d+)?)"
+  },
+  {
+   "name": "Tailwind CSS",
+   "category": "UI framework",
+   "html": [
+    "--tw-(?:ring|shadow|translate|border-opacity)"
+   ],
+   "scripts": [
+    "cdn\\.tailwindcss\\.com"
+   ]
+  },
+  {
+   "name": "Font Awesome",
+   "category": "Font",
+   "scripts": [
+    "font-?awesome",
+    "kit\\.fontawesome\\.com"
+   ],
+   "version": "font-?awesome[/@-](\\d+\\.\\d+\\.\\d+)"
+  },
+  {
+   "name": "Google Fonts",
+   "category": "Font",
+   "scripts": [
+    "fonts\\.googleapis\\.com",
+    "fonts\\.gstatic\\.com"
+   ]
+  },
+  {
+   "name": "Adobe Fonts",
+   "category": "Font",
+   "scripts": [
+    "use\\.typekit\\.net",
+    "fonts\\.adobe\\.com"
+   ]
+  },
+  {
+   "name": "Material UI",
+   "category": "UI framework",
+   "html": [
+    "class=\"Mui[A-Z][A-Za-z]+-root"
+   ]
+  },
+  {
+   "name": "Google Analytics",
+   "category": "Analytics",
+   "scripts": [
+    "google-analytics\\.com/(?:analytics|ga)\\.js",
+    "googletagmanager\\.com/gtag/js\\?id=(?:UA|G)-"
+   ],
+   "html": [
+    "GoogleAnalyticsObject"
+   ],
+   "cookies": [
+    "^_ga(?:_[A-Z0-9]+)?$",
+    "^_gid$"
+   ]
+  },
+  {
+   "name": "Google Analytics 4",
+   "category": "Analytics",
+   "scripts": [
+    "googletagmanager\\.com/gtag/js\\?id=G-"
+   ],
+   "html": [
+    "gtag\\(\\s*[\\'\"]config[\\'\"]\\s*,\\s*[\\'\"]G-"
+   ]
+  },
+  {
+   "name": "Universal Analytics",
+   "category": "Analytics",
+   "html": [
+    "ga\\(\\s*[\\'\"]create[\\'\"]\\s*,\\s*[\\'\"]UA-"
+   ],
+   "scripts": [
+    "gtag/js\\?id=UA-"
+   ]
+  },
+  {
+   "name": "Google Tag Manager",
+   "category": "Tag manager",
+   "scripts": [
+    "googletagmanager\\.com/gtm\\.js"
+   ],
+   "html": [
+    "GTM-[A-Z0-9]{5,8}\\b"
+   ]
+  },
+  {
+   "name": "Segment",
+   "category": "Tag manager",
+   "scripts": [
+    "cdn\\.segment\\.(?:com|io)/analytics\\.js"
+   ],
+   "html": [
+    "analytics\\.load\\("
+   ]
+  },
+  {
+   "name": "Tealium",
+   "category": "Tag manager",
+   "scripts": [
+    "tags\\.tiqcdn\\.com"
+   ]
+  },
+  {
+   "name": "Adobe Launch",
+   "category": "Tag manager",
+   "scripts": [
+    "assets\\.adobedtm\\.com"
+   ]
+  },
+  {
+   "name": "Matomo",
+   "category": "Analytics",
+   "scripts": [
+    "matomo\\.js",
+    "piwik\\.js"
+   ],
+   "html": [
+    "_paq\\.push"
+   ],
+   "cookies": [
+    "^_pk_(?:id|ses)\\."
+   ]
+  },
+  {
+   "name": "Plausible",
+   "category": "Analytics",
+   "scripts": [
+    "plausible\\.io/js/"
+   ]
+  },
+  {
+   "name": "Fathom",
+   "category": "Analytics",
+   "scripts": [
+    "cdn\\.usefathom\\.com"
+   ]
+  },
+  {
+   "name": "Hotjar",
+   "category": "Analytics",
+   "scripts": [
+    "static\\.hotjar\\.com"
+   ],
+   "cookies": [
+    "^_hjSessionUser_",
+    "^_hjid$"
+   ]
+  },
+  {
+   "name": "Microsoft Clarity",
+   "category": "Analytics",
+   "scripts": [
+    "clarity\\.ms/tag/"
+   ],
+   "cookies": [
+    "^_clck$"
+   ]
+  },
+  {
+   "name": "Mixpanel",
+   "category": "Analytics",
+   "scripts": [
+    "cdn\\.mxpnl\\.com",
+    "mixpanel(?:\\.min)?\\.js"
+   ],
+   "cookies": [
+    "^mp_[a-f0-9]+_mixpanel$"
+   ]
+  },
+  {
+   "name": "Amplitude",
+   "category": "Analytics",
+   "scripts": [
+    "cdn\\.amplitude\\.com"
+   ]
+  },
+  {
+   "name": "Heap",
+   "category": "Analytics",
+   "scripts": [
+    "cdn\\.heapanalytics\\.com"
+   ]
+  },
+  {
+   "name": "FullStory",
+   "category": "Analytics",
+   "scripts": [
+    "fullstory\\.com/s/fs\\.js",
+    "edge\\.fullstory\\.com"
+   ]
+  },
+  {
+   "name": "PostHog",
+   "category": "Analytics",
+   "scripts": [
+    "(?:app|eu|us)\\.i\\.posthog\\.com",
+    "posthog(?:\\.min)?\\.js"
+   ]
+  },
+  {
+   "name": "Cloudflare Web Analytics",
+   "category": "Analytics",
+   "scripts": [
+    "static\\.cloudflareinsights\\.com/beacon"
+   ]
+  },
+  {
+   "name": "Vercel Analytics",
+   "category": "Analytics",
+   "scripts": [
+    "/_vercel/insights/"
+   ]
+  },
+  {
+   "name": "Lucky Orange",
+   "category": "Analytics",
+   "scripts": [
+    "luckyorange\\.(?:com|net)"
+   ]
+  },
+  {
+   "name": "Meta Pixel",
+   "category": "Advertising",
+   "scripts": [
+    "connect\\.facebook\\.net/[^\"\\']*/fbevents\\.js"
+   ],
+   "html": [
+    "fbq\\(\\s*[\\'\"]init[\\'\"]"
+   ],
+   "cookies": [
+    "^_fbp$"
+   ]
+  },
+  {
+   "name": "Google Ads",
+   "category": "Advertising",
+   "scripts": [
+    "googleadservices\\.com/pagead/conversion",
+    "googletagmanager\\.com/gtag/js\\?id=AW-"
+   ],
+   "html": [
+    "gtag\\(\\s*[\\'\"]config[\\'\"]\\s*,\\s*[\\'\"]AW-"
+   ]
+  },
+  {
+   "name": "Google AdSense",
+   "category": "Advertising",
+   "scripts": [
+    "pagead2\\.googlesyndication\\.com/pagead/js/adsbygoogle\\.js"
+   ]
+  },
+  {
+   "name": "TikTok Pixel",
+   "category": "Advertising",
+   "scripts": [
+    "analytics\\.tiktok\\.com/i18n/pixel"
+   ]
+  },
+  {
+   "name": "LinkedIn Insight Tag",
+   "category": "Advertising",
+   "scripts": [
+    "snap\\.licdn\\.com/li\\.lms-analytics"
+   ],
+   "html": [
+    "_linkedin_partner_id"
+   ]
+  },
+  {
+   "name": "Pinterest Tag",
+   "category": "Advertising",
+   "scripts": [
+    "s\\.pinimg\\.com/ct/core\\.js"
+   ]
+  },
+  {
+   "name": "Twitter Pixel",
+   "category": "Advertising",
+   "scripts": [
+    "static\\.ads-twitter\\.com/uwt\\.js"
+   ]
+  },
+  {
+   "name": "Snap Pixel",
+   "category": "Advertising",
+   "scripts": [
+    "sc-static\\.net/scevent"
+   ]
+  },
+  {
+   "name": "Criteo",
+   "category": "Advertising",
+   "scripts": [
+    "static\\.criteo\\.net",
+    "dynamic\\.criteo\\.com"
+   ]
+  },
+  {
+   "name": "Microsoft Advertising",
+   "category": "Advertising",
+   "scripts": [
+    "bat\\.bing\\.com/bat\\.js"
+   ]
+  },
+  {
+   "name": "Reddit Pixel",
+   "category": "Advertising",
+   "scripts": [
+    "redditstatic\\.com/ads/pixel\\.js"
+   ]
+  },
+  {
+   "name": "HubSpot",
+   "category": "Marketing automation",
+   "scripts": [
+    "js\\.hs-scripts\\.com",
+    "js\\.hsforms\\.net",
+    "js\\.hs-analytics\\.net",
+    "js\\.usemessages\\.com"
+   ],
+   "cookies": [
+    "^hubspotutk$",
+    "^__hstc$"
+   ]
+  },
+  {
+   "name": "Marketo",
+   "category": "Marketing automation",
+   "scripts": [
+    "munchkin\\.marketo\\.net"
+   ],
+   "html": [
+    "Munchkin\\.init"
+   ]
+  },
+  {
+   "name": "Pardot",
+   "category": "Marketing automation",
+   "scripts": [
+    "pi\\.pardot\\.com"
+   ],
+   "html": [
+    "piAId\\s*="
+   ]
+  },
+  {
+   "name": "Klaviyo",
+   "category": "Marketing automation",
+   "scripts": [
+    "static\\.klaviyo\\.com",
+    "a\\.klaviyo\\.com"
+   ],
+   "cookies": [
+    "^__kla_id$"
+   ]
+  },
+  {
+   "name": "Mailchimp",
+   "category": "Marketing automation",
+   "scripts": [
+    "chimpstatic\\.com",
+    "list-manage\\.com"
+   ],
+   "html": [
+    "mc\\.us\\d+\\.list-manage\\.com"
+   ]
+  },
+  {
+   "name": "ActiveCampaign",
+   "category": "Marketing automation",
+   "scripts": [
+    "trackcmp\\.net",
+    "activehosted\\.com"
+   ]
+  },
+  {
+   "name": "Brevo",
+   "category": "Marketing automation",
+   "scripts": [
+    "sibautomation\\.com",
+    "sendinblue\\.com",
+    "brevo\\.com/js"
+   ]
+  },
+  {
+   "name": "ConvertKit",
+   "category": "Marketing automation",
+   "scripts": [
+    "f\\.convertkit\\.com",
+    "convertkit-mail\\.com"
+   ]
+  },
+  {
+   "name": "Customer.io",
+   "category": "Marketing automation",
+   "scripts": [
+    "track\\.customer\\.io"
+   ]
+  },
+  {
+   "name": "Braze",
+   "category": "Marketing automation",
+   "scripts": [
+    "js\\.appboycdn\\.com",
+    "braze-sdk"
+   ]
+  },
+  {
+   "name": "Omnisend",
+   "category": "Marketing automation",
+   "scripts": [
+    "omnisnippet|omnisrc\\.com"
+   ]
+  },
+  {
+   "name": "Salesforce",
+   "category": "CRM",
+   "scripts": [
+    "force\\.com/",
+    "salesforceliveagent\\.com"
+   ],
+   "html": [
+    "embedded_svc\\."
+   ]
+  },
+  {
+   "name": "Pipedrive",
+   "category": "CRM",
+   "scripts": [
+    "leadbooster-chat\\.pipedrive\\.com|pipedriveassets\\.com"
+   ]
+  },
+  {
+   "name": "Zoho",
+   "category": "CRM",
+   "scripts": [
+    "js\\.zohocdn\\.com|salesiq\\.zoho\\.com|zohopublic\\.com"
+   ]
+  },
+  {
+   "name": "Intercom",
+   "category": "Live chat",
+   "scripts": [
+    "widget\\.intercom\\.io",
+    "js\\.intercomcdn\\.com"
+   ],
+   "html": [
+    "intercomSettings"
+   ],
+   "cookies": [
+    "^intercom-(?:id|session)-"
+   ]
+  },
+  {
+   "name": "Drift",
+   "category": "Live chat",
+   "scripts": [
+    "js\\.driftt?\\.com"
+   ],
+   "html": [
+    "drift\\.load\\("
+   ]
+  },
+  {
+   "name": "Crisp",
+   "category": "Live chat",
+   "scripts": [
+    "client\\.crisp\\.chat"
+   ],
+   "html": [
+    "CRISP_WEBSITE_ID"
+   ]
+  },
+  {
+   "name": "Tawk.to",
+   "category": "Live chat",
+   "scripts": [
+    "embed\\.tawk\\.to"
+   ]
+  },
+  {
+   "name": "LiveChat",
+   "category": "Live chat",
+   "scripts": [
+    "cdn\\.livechatinc\\.com"
+   ]
+  },
+  {
+   "name": "Tidio",
+   "category": "Live chat",
+   "scripts": [
+    "code\\.tidio\\.co"
+   ]
+  },
+  {
+   "name": "Olark",
+   "category": "Live chat",
+   "scripts": [
+    "static\\.olark\\.com"
+   ]
+  },
+  {
+   "name": "Zendesk",
+   "category": "Customer support",
+   "scripts": [
+    "static\\.zdassets\\.com",
+    "zendesk\\.com/embeddable"
+   ],
+   "html": [
+    "zE\\(|zESettings"
+   ]
+  },
+  {
+   "name": "Freshdesk",
+   "category": "Customer support",
+   "scripts": [
+    "wchat\\.freshchat\\.com",
+    "freshdesk\\.com",
+    "freshworks\\.com/widgets"
+   ]
+  },
+  {
+   "name": "Help Scout",
+   "category": "Customer support",
+   "scripts": [
+    "beacon-v2\\.helpscout\\.net"
+   ]
+  },
+  {
+   "name": "Gorgias",
+   "category": "Customer support",
+   "scripts": [
+    "config\\.gorgias\\.chat|gorgias\\.io"
+   ]
+  },
+  {
+   "name": "Stripe",
+   "category": "Payments",
+   "scripts": [
+    "js\\.stripe\\.com"
+   ],
+   "cookies": [
+    "^__stripe_(?:mid|sid)$"
+   ]
+  },
+  {
+   "name": "PayPal",
+   "category": "Payments",
+   "scripts": [
+    "paypal\\.com/sdk/js",
+    "paypalobjects\\.com/api/checkout\\.js"
+   ]
+  },
+  {
+   "name": "Klarna",
+   "category": "Payments",
+   "scripts": [
+    "klarna(?:services)?\\.com/(?:web-sdk|lib)",
+    "x\\.klarnacdn\\.net"
+   ]
+  },
+  {
+   "name": "Adyen",
+   "category": "Payments",
+   "scripts": [
+    "checkoutshopper-live\\.adyen\\.com"
+   ]
+  },
+  {
+   "name": "Square",
+   "category": "Payments",
+   "scripts": [
+    "js\\.squarecdn\\.com|web\\.squarecdn\\.com"
+   ]
+  },
+  {
+   "name": "Afterpay",
+   "category": "Payments",
+   "scripts": [
+    "js\\.afterpay\\.com|portal\\.afterpay\\.com"
+   ]
+  },
+  {
+   "name": "Shop Pay",
+   "category": "Payments",
+   "html": [
+    "shopify-pay|shop-pay-button"
+   ]
+  },
+  {
+   "name": "Mollie",
+   "category": "Payments",
+   "scripts": [
+    "js\\.mollie\\.com"
+   ]
+  },
+  {
+   "name": "Braintree",
+   "category": "Payments",
+   "scripts": [
+    "js\\.braintreegateway\\.com"
+   ]
+  },
+  {
+   "name": "Cookiebot",
+   "category": "Cookie consent",
+   "scripts": [
+    "consent\\.cookiebot\\.com"
+   ]
+  },
+  {
+   "name": "OneTrust",
+   "category": "Cookie consent",
+   "scripts": [
+    "cdn\\.cookielaw\\.org",
+    "onetrust\\.com"
+   ],
+   "html": [
+    "optanon"
+   ]
+  },
+  {
+   "name": "CookieYes",
+   "category": "Cookie consent",
+   "scripts": [
+    "cdn-cookieyes\\.com"
+   ]
+  },
+  {
+   "name": "Usercentrics",
+   "category": "Cookie consent",
+   "scripts": [
+    "usercentrics\\.eu"
+   ]
+  },
+  {
+   "name": "Didomi",
+   "category": "Cookie consent",
+   "scripts": [
+    "sdk\\.privacy-center\\.org"
+   ]
+  },
+  {
+   "name": "Termly",
+   "category": "Cookie consent",
+   "scripts": [
+    "app\\.termly\\.io"
+   ]
+  },
+  {
+   "name": "reCAPTCHA",
+   "category": "Security",
+   "scripts": [
+    "google\\.com/recaptcha/",
+    "gstatic\\.com/recaptcha/"
+   ]
+  },
+  {
+   "name": "hCaptcha",
+   "category": "Security",
+   "scripts": [
+    "hcaptcha\\.com/1/api\\.js"
+   ]
+  },
+  {
+   "name": "Cloudflare Turnstile",
+   "category": "Security",
+   "scripts": [
+    "challenges\\.cloudflare\\.com/turnstile"
+   ]
+  },
+  {
+   "name": "accessiBe (accessibility overlay)",
+   "category": "Accessibility overlay",
+   "scripts": [
+    "acsbapp\\.com|acsbap\\.com"
+   ]
+  },
+  {
+   "name": "UserWay (accessibility overlay)",
+   "category": "Accessibility overlay",
+   "scripts": [
+    "cdn\\.userway\\.org"
+   ]
+  },
+  {
+   "name": "AudioEye (accessibility overlay)",
+   "category": "Accessibility overlay",
+   "scripts": [
+    "audioeye\\.com"
+   ]
+  },
+  {
+   "name": "Optimizely",
+   "category": "A/B testing",
+   "scripts": [
+    "cdn\\.optimizely\\.com"
+   ]
+  },
+  {
+   "name": "VWO",
+   "category": "A/B testing",
+   "scripts": [
+    "dev\\.visualwebsiteoptimizer\\.com"
+   ]
+  },
+  {
+   "name": "Google Optimize",
+   "category": "A/B testing",
+   "scripts": [
+    "googleoptimize\\.com/optimize\\.js"
+   ]
+  },
+  {
+   "name": "YouTube embed",
+   "category": "Video",
+   "html": [
+    "youtube(?:-nocookie)?\\.com/embed/"
+   ]
+  },
+  {
+   "name": "Vimeo embed",
+   "category": "Video",
+   "html": [
+    "player\\.vimeo\\.com/video/"
+   ]
+  },
+  {
+   "name": "Wistia",
+   "category": "Video",
+   "scripts": [
+    "fast\\.wistia\\.(?:com|net)"
+   ]
+  },
+  {
+   "name": "Google Maps",
+   "category": "Maps",
+   "scripts": [
+    "maps\\.googleapis\\.com/maps/api/js",
+    "maps\\.google\\.com/maps"
+   ],
+   "html": [
+    "google\\.com/maps/embed"
+   ]
+  },
+  {
+   "name": "Mapbox",
+   "category": "Maps",
+   "scripts": [
+    "api\\.mapbox\\.com/mapbox-gl-js",
+    "mapbox-gl(?:\\.min)?\\.js"
+   ]
+  },
+  {
+   "name": "Leaflet",
+   "category": "Maps",
+   "scripts": [
+    "leaflet(?:\\.min)?\\.(?:js|css)"
+   ]
+  },
+  {
+   "name": "Calendly",
+   "category": "Other",
+   "scripts": [
+    "assets\\.calendly\\.com"
+   ],
+   "html": [
+    "calendly\\.com/"
+   ]
+  },
+  {
+   "name": "Typeform",
+   "category": "Other",
+   "scripts": [
+    "embed\\.typeform\\.com"
+   ]
+  },
+  {
+   "name": "Trustpilot",
+   "category": "Other",
+   "scripts": [
+    "widget\\.trustpilot\\.com"
+   ]
+  },
+  {
+   "name": "Yotpo",
+   "category": "Other",
+   "scripts": [
+    "staticw2\\.yotpo\\.com|cdn-widgetsrepository\\.yotpo\\.com"
+   ]
+  },
+  {
+   "name": "Sentry",
+   "category": "Developer tools",
+   "scripts": [
+    "browser\\.sentry-cdn\\.com",
+    "js\\.sentry-cdn\\.com"
+   ]
+  },
+  {
+   "name": "Datadog RUM",
+   "category": "Developer tools",
+   "scripts": [
+    "datadoghq-browser-agent\\.com"
+   ]
+  },
+  {
+   "name": "New Relic",
+   "category": "Developer tools",
+   "scripts": [
+    "js-agent\\.newrelic\\.com",
+    "bam\\.nr-data\\.net"
+   ]
+  },
+  {
+   "name": "LaunchDarkly",
+   "category": "Developer tools",
+   "scripts": [
+    "launchdarkly\\.com"
+   ]
+  },
+  {
+   "name": "Cloudflare",
+   "category": "CDN",
+   "headers": {
+    "cf-ray": ".",
+    "server": "^cloudflare$",
+    "cf-cache-status": "."
+   },
+   "cookies": [
+    "^__cf_bm$",
+    "^cf_clearance$",
+    "^__cfduid$"
+   ]
+  },
+  {
+   "name": "Amazon CloudFront",
+   "category": "CDN",
+   "headers": {
+    "x-amz-cf-id": ".",
+    "via": "CloudFront",
+    "x-amz-cf-pop": "."
+   }
+  },
+  {
+   "name": "Fastly",
+   "category": "CDN",
+   "headers": {
+    "x-served-by": "cache-[a-z0-9-]+",
+    "fastly-debug-digest": ".",
+    "x-fastly-request-id": ".",
+    "via": "varnish"
+   }
+  },
+  {
+   "name": "Akamai",
+   "category": "CDN",
+   "headers": {
+    "x-akamai-transformed": ".",
+    "akamai-grn": ".",
+    "server": "^AkamaiGHost$",
+    "x-akamai-request-id": "."
+   },
+   "cookies": [
+    "^akamai_generated_",
+    "^ak_bmsc$",
+    "^bm_sz$"
+   ]
+  },
+  {
+   "name": "Bunny CDN",
+   "category": "CDN",
+   "headers": {
+    "server": "^BunnyCDN",
+    "cdn-pullzone": "."
+   }
+  },
+  {
+   "name": "KeyCDN",
+   "category": "CDN",
+   "headers": {
+    "server": "^keycdn-engine"
+   }
+  },
+  {
+   "name": "jsDelivr",
+   "category": "CDN",
+   "scripts": [
+    "cdn\\.jsdelivr\\.net"
+   ]
+  },
+  {
+   "name": "cdnjs",
+   "category": "CDN",
+   "scripts": [
+    "cdnjs\\.cloudflare\\.com"
+   ]
+  },
+  {
+   "name": "unpkg",
+   "category": "CDN",
+   "scripts": [
+    "unpkg\\.com"
+   ]
+  },
+  {
+   "name": "Imperva",
+   "category": "CDN",
+   "headers": {
+    "x-iinfo": ".",
+    "x-cdn": "Imperva|Incapsula"
+   },
+   "cookies": [
+    "^incap_ses_",
+    "^visid_incap_"
+   ]
+  },
+  {
+   "name": "Sucuri",
+   "category": "Security",
+   "headers": {
+    "x-sucuri-id": ".",
+    "server": "^Sucuri"
+   }
+  },
+  {
+   "name": "Vercel",
+   "category": "Hosting",
+   "headers": {
+    "x-vercel-id": ".",
+    "server": "^Vercel$"
+   }
+  },
+  {
+   "name": "Netlify",
+   "category": "Hosting",
+   "headers": {
+    "x-nf-request-id": ".",
+    "server": "^Netlify$"
+   }
+  },
+  {
+   "name": "GitHub Pages",
+   "category": "Hosting",
+   "headers": {
+    "server": "^GitHub\\.com$",
+    "x-github-request-id": "."
+   }
+  },
+  {
+   "name": "Heroku",
+   "category": "Hosting",
+   "headers": {
+    "via": "vegur"
+   }
+  },
+  {
+   "name": "Fly.io",
+   "category": "Hosting",
+   "headers": {
+    "fly-request-id": ".",
+    "server": "^Fly"
+   }
+  },
+  {
+   "name": "Render",
+   "category": "Hosting",
+   "headers": {
+    "x-render-origin-server": ".",
+    "rndr-id": "."
+   }
+  },
+  {
+   "name": "Azure",
+   "category": "Hosting",
+   "headers": {
+    "x-azure-ref": ".",
+    "x-ms-request-id": ".",
+    "server": "^Microsoft-(?:Azure|IIS)"
+   }
+  },
+  {
+   "name": "Amazon S3",
+   "category": "Hosting",
+   "headers": {
+    "server": "^AmazonS3$",
+    "x-amz-request-id": "."
+   }
+  },
+  {
+   "name": "Amazon Web Services",
+   "category": "Hosting",
+   "headers": {
+    "x-amzn-requestid": ".",
+    "x-amzn-trace-id": ".",
+    "x-amz-apigw-id": "."
+   }
+  },
+  {
+   "name": "Google Cloud",
+   "category": "Hosting",
+   "headers": {
+    "server": "^Google Frontend$",
+    "x-cloud-trace-context": "."
+   }
+  },
+  {
+   "name": "WP Engine",
+   "category": "Hosting",
+   "headers": {
+    "x-powered-by": "WP Engine",
+    "x-wpe-loopback-upstream-addr": "."
+   }
+  },
+  {
+   "name": "Kinsta",
+   "category": "Hosting",
+   "headers": {
+    "x-kinsta-cache": "."
+   }
+  },
+  {
+   "name": "SiteGround",
+   "category": "Hosting",
+   "headers": {
+    "x-proxy-cache": ".",
+    "server": "^SiteGround"
+   },
+   "html": [
+    "sg-cachepress|siteground"
+   ]
+  },
+  {
+   "name": "Pantheon",
+   "category": "Hosting",
+   "headers": {
+    "x-pantheon-styx-hostname": "."
+   }
+  },
+  {
+   "name": "Squarespace hosting",
+   "category": "Hosting",
+   "headers": {
+    "server": "^Squarespace$"
+   }
+  },
+  {
+   "name": "Nginx",
+   "category": "Web server",
+   "headers": {
+    "server": "^nginx(?:/([\\d.]+))?"
+   }
+  },
+  {
+   "name": "Apache",
+   "category": "Web server",
+   "headers": {
+    "server": "^Apache(?:/([\\d.]+))?"
+   }
+  },
+  {
+   "name": "LiteSpeed",
+   "category": "Web server",
+   "headers": {
+    "server": "^LiteSpeed",
+    "x-litespeed-cache": "."
+   }
+  },
+  {
+   "name": "Microsoft IIS",
+   "category": "Web server",
+   "headers": {
+    "server": "^Microsoft-IIS(?:/([\\d.]+))?"
+   }
+  },
+  {
+   "name": "Caddy",
+   "category": "Web server",
+   "headers": {
+    "server": "^Caddy"
+   }
+  },
+  {
+   "name": "OpenResty",
+   "category": "Web server",
+   "headers": {
+    "server": "^openresty(?:/([\\d.]+))?"
+   }
+  },
+  {
+   "name": "Varnish",
+   "category": "Web server",
+   "headers": {
+    "x-varnish": ".",
+    "via": "varnish"
+   }
+  },
+  {
+   "name": "PHP",
+   "category": "Programming language",
+   "headers": {
+    "x-powered-by": "PHP(?:/([\\d.]+))?"
+   },
+   "cookies": [
+    "^PHPSESSID$"
+   ]
+  },
+  {
+   "name": "ASP.NET",
+   "category": "Programming language",
+   "headers": {
+    "x-powered-by": "ASP\\.NET",
+    "x-aspnet-version": "([\\d.]+)"
+   },
+   "cookies": [
+    "^ASP\\.NET_SessionId$"
+   ]
+  },
+  {
+   "name": "Express",
+   "category": "Programming language",
+   "headers": {
+    "x-powered-by": "^Express"
+   }
+  },
+  {
+   "name": "Ruby on Rails",
+   "category": "Programming language",
+   "meta": {
+    "csrf-param": "authenticity_token"
+   }
+  },
+  {
+   "name": "Django",
+   "category": "Programming language",
+   "cookies": [
+    "^csrftoken$"
+   ],
+   "html": [
+    "csrfmiddlewaretoken"
+   ]
+  },
+  {
+   "name": "Laravel",
+   "category": "Programming language",
+   "cookies": [
+    "^laravel_session$"
+   ]
+  },
+  {
+   "name": "Google Workspace",
+   "category": "Email",
+   "mx": [
+    "(?:^|\\.)google\\.com\\.?$",
+    "googlemail\\.com\\.?$"
+   ],
+   "txt": [
+    "include:_spf\\.google\\.com"
+   ]
+  },
+  {
+   "name": "Microsoft 365",
+   "category": "Email",
+   "mx": [
+    "mail\\.protection\\.outlook\\.com\\.?$"
+   ],
+   "txt": [
+    "include:spf\\.protection\\.outlook\\.com",
+    "^MS=ms\\d+"
+   ]
+  },
+  {
+   "name": "Zoho Mail",
+   "category": "Email",
+   "mx": [
+    "(?:^|\\.)zoho\\.(?:com|eu|in|com\\.au)\\.?$"
+   ],
+   "txt": [
+    "include:zoho\\.(?:com|eu)"
+   ]
+  },
+  {
+   "name": "Proton Mail",
+   "category": "Email",
+   "mx": [
+    "protonmail\\.ch\\.?$"
+   ],
+   "txt": [
+    "include:_spf\\.protonmail\\.ch"
+   ]
+  },
+  {
+   "name": "Fastmail",
+   "category": "Email",
+   "mx": [
+    "messagingengine\\.com\\.?$"
+   ]
+  },
+  {
+   "name": "Mimecast",
+   "category": "Email",
+   "mx": [
+    "mimecast\\.(?:com|co\\.za)\\.?$"
+   ]
+  },
+  {
+   "name": "Proofpoint",
+   "category": "Email",
+   "mx": [
+    "pphosted\\.com\\.?$|ppe-hosted\\.com\\.?$"
+   ]
+  },
+  {
+   "name": "Barracuda",
+   "category": "Email",
+   "mx": [
+    "barracudanetworks\\.com\\.?$"
+   ]
+  },
+  {
+   "name": "Amazon WorkMail / SES",
+   "category": "Email",
+   "mx": [
+    "(?:amazonaws\\.com|awsapps\\.com)\\.?$"
+   ]
+  },
+  {
+   "name": "Yandex Mail",
+   "category": "Email",
+   "mx": [
+    "yandex\\.(?:net|ru)\\.?$"
+   ]
+  },
+  {
+   "name": "Cloudflare Email Routing",
+   "category": "Email",
+   "mx": [
+    "mx\\.cloudflare\\.net\\.?$"
+   ]
+  },
+  {
+   "name": "GoDaddy Email",
+   "category": "Email",
+   "mx": [
+    "secureserver\\.net\\.?$"
+   ]
+  },
+  {
+   "name": "IONOS Mail",
+   "category": "Email",
+   "mx": [
+    "(?:kundenserver\\.de|ionos\\.(?:com|de)|1and1\\.com)\\.?$"
+   ]
+  },
+  {
+   "name": "OVH Mail",
+   "category": "Email",
+   "mx": [
+    "mail\\.ovh\\.net\\.?$|ovh\\.net\\.?$"
+   ]
+  },
+  {
+   "name": "Namecheap Private Email",
+   "category": "Email",
+   "mx": [
+    "privateemail\\.com\\.?$"
+   ]
+  },
+  {
+   "name": "Rackspace Email",
+   "category": "Email",
+   "mx": [
+    "emailsrvr\\.com\\.?$"
+   ]
+  },
+  {
+   "name": "Apple iCloud Mail",
+   "category": "Email",
+   "mx": [
+    "mail\\.icloud\\.com\\.?$"
+   ]
+  },
+  {
+   "name": "Gandi Mail",
+   "category": "Email",
+   "mx": [
+    "mail\\.gandi\\.net\\.?$"
+   ]
+  },
+  {
+   "name": "Tuta",
+   "category": "Email",
+   "mx": [
+    "tutanota\\.de\\.?$"
+   ]
+  },
+  {
+   "name": "Forward Email",
+   "category": "Email",
+   "mx": [
+    "forwardemail\\.net\\.?$"
+   ]
+  },
+  {
+   "name": "Migadu",
+   "category": "Email",
+   "mx": [
+    "migadu\\.com\\.?$"
+   ]
+  },
+  {
+   "name": "Mailgun",
+   "category": "Email delivery",
+   "mx": [
+    "mailgun\\.org\\.?$"
+   ],
+   "txt": [
+    "include:mailgun\\.org"
+   ]
+  },
+  {
+   "name": "SendGrid",
+   "category": "Email delivery",
+   "txt": [
+    "include:sendgrid\\.net"
+   ]
+  },
+  {
+   "name": "Amazon SES",
+   "category": "Email delivery",
+   "txt": [
+    "include:amazonses\\.com"
+   ]
+  },
+  {
+   "name": "Postmark",
+   "category": "Email delivery",
+   "txt": [
+    "include:spf\\.mtasv\\.net"
+   ]
+  },
+  {
+   "name": "Mandrill",
+   "category": "Email delivery",
+   "txt": [
+    "include:spf\\.mandrillapp\\.com"
+   ]
+  },
+  {
+   "name": "Mailchimp (sending)",
+   "category": "Email delivery",
+   "txt": [
+    "include:servers\\.mcsv\\.net"
+   ]
+  },
+  {
+   "name": "Brevo (sending)",
+   "category": "Email delivery",
+   "txt": [
+    "include:(?:spf\\.brevo\\.com|spf\\.sendinblue\\.com)"
+   ]
+  },
+  {
+   "name": "SparkPost",
+   "category": "Email delivery",
+   "txt": [
+    "include:sparkpostmail\\.com"
+   ]
+  },
+  {
+   "name": "Salesforce (email)",
+   "category": "Email delivery",
+   "txt": [
+    "include:_spf\\.salesforce\\.com"
+   ]
+  },
+  {
+   "name": "Zendesk (email)",
+   "category": "Email delivery",
+   "txt": [
+    "include:mail\\.zendesk\\.com"
+   ]
+  },
+  {
+   "name": "HubSpot (email)",
+   "category": "Email delivery",
+   "txt": [
+    "include:[a-z0-9.-]*hubspotemail\\.net"
+   ]
+  },
+  {
+   "name": "Google site verification",
+   "category": "Domain verification",
+   "txt": [
+    "^google-site-verification="
+   ]
+  },
+  {
+   "name": "Meta domain verification",
+   "category": "Domain verification",
+   "txt": [
+    "^facebook-domain-verification="
+   ]
+  },
+  {
+   "name": "Atlassian domain verification",
+   "category": "Domain verification",
+   "txt": [
+    "^atlassian-domain-verification="
+   ]
+  },
+  {
+   "name": "Stripe domain verification",
+   "category": "Domain verification",
+   "txt": [
+    "^stripe-verification="
+   ]
+  },
+  {
+   "name": "DocuSign domain verification",
+   "category": "Domain verification",
+   "txt": [
+    "^docusign="
+   ]
+  },
+  {
+   "name": "Apple domain verification",
+   "category": "Domain verification",
+   "txt": [
+    "^apple-domain-verification="
+   ]
+  },
+  {
+   "name": "Adobe domain verification",
+   "category": "Domain verification",
+   "txt": [
+    "^adobe-idp-site-verification="
+   ]
+  },
+  {
+   "name": "OneTrust domain verification",
+   "category": "Domain verification",
+   "txt": [
+    "^onetrust-domain-verification="
+   ]
+  },
+  {
+   "name": "Notion domain verification",
+   "category": "Domain verification",
+   "txt": [
+    "^notion-domain-verification="
+   ]
+  },
+  {
+   "name": "Miro domain verification",
+   "category": "Domain verification",
+   "txt": [
+    "^miro-verification="
+   ]
+  },
+  {
+   "name": "Ahrefs site verification",
+   "category": "Domain verification",
+   "txt": [
+    "^ahrefs-site-verification"
+   ]
+  }
+ ]
+}

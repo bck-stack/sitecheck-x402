@@ -2,7 +2,7 @@
 
 **Live:** https://api.sitecheck-api.workers.dev · listed on [x402scan](https://www.x402scan.com) · discovery: `/.well-known/x402`, `/openapi.json`
 
-SiteCheck is a small API that AI agents can use **without an account or API key**: 23 pay-per-call tools in all. Besides its AI and web tools (including a [web page to Markdown reader](#web-e-mail-domain-and-solana-data)), it sells e-mail, domain and Solana token data, [business and compliance data](#business-and-compliance-data) (EU VAT, IBAN, LEI, US recalls, OSHA/EPA enforcement, UK insolvency notices), prediction-market data and unsigned trade transactions [powered by Panta](#prediction-markets-panta). Every call is paid per request in **USDC** with the [x402](https://x402.org) protocol, on **Base**, **Solana** or **Arc** (Circle's L1), whichever the buyer holds USDC on. Call it, get a `402 Payment Required` listing the price on each network, sign the payment and get the result. It runs on Cloudflare Workers and Workers AI.
+SiteCheck is a small API that AI agents can use **without an account or API key**: 29 pay-per-call tools in all. Besides its AI and web tools (including a [web page to Markdown reader](#web-documents-e-mail-domain-and-solana-data)), it sells PDF to text, translation, tech stack detection, sitemap URLs, exchange rates, e-mail, domain and Solana token and wallet data, [business and compliance data](#business-and-compliance-data) (EU VAT, IBAN, LEI, US recalls, OSHA/EPA enforcement, UK insolvency notices), prediction-market data and unsigned trade transactions [powered by Panta](#prediction-markets-panta). Every call is paid per request in **USDC** with the [x402](https://x402.org) protocol, on **Base**, **Solana** or **Arc** (Circle's L1), whichever the buyer holds USDC on. Call it, get a `402 Payment Required` listing the price on each network, sign the payment and get the result. It runs on Cloudflare Workers and Workers AI.
 
 | Endpoint | Price | What it does |
 |---|---|---|
@@ -25,6 +25,12 @@ SiteCheck is a small API that AI agents can use **without an account or API key*
 | `GET /api/domain?domain=` | $0.002 | RDAP (WHOIS successor) and DNS: registered or available, registrar, created/expiry dates, status, DNSSEC, name servers, IPs, MX |
 | `GET /api/solana/token?address=` | $0.002 | Solana token check: price, market cap, liquidity, holders, 24h trading, organic score, top-holder share, on-chain mint/freeze authority and Token-2022 extensions, red flags |
 | `GET /api/solana/trending?mode=&interval=&minLiquidityUsd=` | $0.003 | Trending, new, top-traded or top-organic Solana tokens with the same fields and flags |
+| `GET /api/solana/wallet?address=` | $0.003 | Solana wallet holdings: SOL and every token with symbol, USD price and value, total in USD |
+| `GET /api/tech?url=` | $0.003 | Website technology detection (CMS, e-commerce, analytics, CDN, hosting, chat, payments, e-mail provider) with version, confidence and evidence |
+| `POST /api/pdf` | $0.003 | PDF to text by URL or base64 (up to 15 MB), page by page, with title, author and dates; text PDFs only |
+| `GET /api/sitemap?url=&pathPrefix=&since=` | $0.002 | Every URL in a site's XML sitemaps with lastmod, newest first |
+| `GET /api/fx?from=&to=&amount=&date=` | $0.001 | ECB exchange rates (latest, a past date or a time series) with amount conversion |
+| `POST /api/translate` | $0.002 | Translation with Llama 3.1 8B, up to 6,000 characters, formatting kept |
 
 ## Prediction markets (Panta)
 
@@ -49,14 +55,19 @@ node scripts/demo-markets.mjs --q bitcoin            # search, brief and quote, 
 node scripts/demo-markets.mjs --q bitcoin --build    # also builds the unsigned transaction (+0.01); never signs or sends it
 ```
 
-## Web, e-mail, domain and Solana data
+## Web, documents, e-mail, domain and Solana data
 
 | Tool | Source | Notes |
 |---|---|---|
 | `/api/read` | The page itself, fetched once with the `SiteCheckReader` User-Agent | `robots.txt` is respected (a disallowed page answers 403 and is not charged). No JavaScript is run, so pages that only render in the browser come back empty (422, not charged). PDFs and other binary files answer 415. The content belongs to its publisher. |
 | `/api/email-check` | DNS over HTTPS (Cloudflare, Google) and the [disposable-email-domains](https://github.com/disposable-email-domains/disposable-email-domains) list (CC0) | No SMTP connection is made: `unknown` means nothing is wrong with the address or its domain, not that the mailbox exists. |
 | `/api/domain` | The [IANA RDAP bootstrap](https://data.iana.org/rdap/dns.json) and each registry's RDAP server; DNS over HTTPS | `available` means the registry has no record; premium or reserved names can still be unavailable to buy. TLDs without RDAP are inferred from DNS. |
-| `/api/solana/token`, `/api/solana/trending` | [Jupiter](https://jup.ag) token API, Solana mainnet JSON-RPC (mint account), [GeckoTerminal](https://www.geckoterminal.com) for pools (best effort) | Information only, not financial advice. Nothing is signed or sent. On-chain mint and freeze authority win over the API's audit when both are available. |
+| `/api/solana/token`, `/api/solana/trending`, `/api/solana/wallet` | [Jupiter](https://jup.ag) token, price and holdings APIs, Solana mainnet JSON-RPC (mint account), [GeckoTerminal](https://www.geckoterminal.com) for pools (best effort) | Information only, not financial advice. Nothing is signed or sent. On-chain mint and freeze authority win over the API's audit when both are available. |
+| `/api/tech` | The site's home page, headers, cookies and DNS (MX, TXT); 231 own fingerprints (MIT, not derived from Wappalyzer) | No JavaScript is run; a site behind a bot challenge returns what its headers and DNS show. |
+| `/api/pdf` | The PDF's text layer, read with [unpdf](https://github.com/unjs/unpdf) (PDF.js) | No OCR: a scanned PDF answers 422 and is not charged. |
+| `/api/sitemap` | The site's `robots.txt` and XML sitemaps | Indexes are followed up to 25 child sitemaps per call. |
+| `/api/fx` | European Central Bank reference rates via [Frankfurter](https://frankfurter.dev) | Published on working days around 16:00 CET; weekends return the last published day. |
+| `/api/translate` | Workers AI `@cf/meta/llama-3.1-8b-instruct-fast` | Machine translation: review important texts. |
 
 ## Business and compliance data
 
