@@ -2,7 +2,7 @@
 
 **Live:** https://api.sitecheck-api.workers.dev · listed on [x402scan](https://www.x402scan.com) · discovery: `/.well-known/x402`, `/openapi.json`
 
-SiteCheck is a small API that AI agents can use **without an account or API key**: 18 pay-per-call tools in all. Besides its AI and web tools, it sells [business and compliance data](#business-and-compliance-data) (EU VAT, IBAN, LEI, US recalls, OSHA/EPA enforcement, UK insolvency notices), prediction-market data and unsigned trade transactions [powered by Panta](#prediction-markets-panta). Every call is paid per request in **USDC** with the [x402](https://x402.org) protocol, on **Base**, **Solana** or **Arc** (Circle's L1), whichever the buyer holds USDC on. Call it, get a `402 Payment Required` listing the price on each network, sign the payment and get the result. It runs on Cloudflare Workers and Workers AI.
+SiteCheck is a small API that AI agents can use **without an account or API key**: 23 pay-per-call tools in all. Besides its AI and web tools (including a [web page to Markdown reader](#web-e-mail-domain-and-solana-data)), it sells e-mail, domain and Solana token data, [business and compliance data](#business-and-compliance-data) (EU VAT, IBAN, LEI, US recalls, OSHA/EPA enforcement, UK insolvency notices), prediction-market data and unsigned trade transactions [powered by Panta](#prediction-markets-panta). Every call is paid per request in **USDC** with the [x402](https://x402.org) protocol, on **Base**, **Solana** or **Arc** (Circle's L1), whichever the buyer holds USDC on. Call it, get a `402 Payment Required` listing the price on each network, sign the payment and get the result. It runs on Cloudflare Workers and Workers AI.
 
 | Endpoint | Price | What it does |
 |---|---|---|
@@ -20,6 +20,11 @@ SiteCheck is a small API that AI agents can use **without an account or API key*
 | `GET /api/recalls?q=&source=&since=&classification=&limit=` | $0.003 | US product recalls from openFDA and CPSC in one schema, with a high/medium/low severity |
 | `GET /api/violations?company=&state=&since=&minPenalty=&source=&limit=` | $0.005 | US enforcement cases: OSHA (DOL API, needs a key on the deployment) and EPA ECHO, with official record links |
 | `GET /api/uk-insolvency?since=&q=&postcode=&type=&limit=` | $0.003 | UK company insolvency notices from The Gazette (our nightly cache of the last 8 days), optional Companies House enrichment |
+| `GET /api/read?url=&format=&maxChars=&links=` | $0.002 | One web page as clean Markdown or text for an LLM: main content only, title, description, author, date, language, canonical; robots.txt respected |
+| `GET /api/email-check?email=` | $0.001 | E-mail pre-check without SMTP: syntax, mail DNS, disposable domain, role account, free provider, typo suggestion; `emails=` for up to 50 |
+| `GET /api/domain?domain=` | $0.002 | RDAP (WHOIS successor) and DNS: registered or available, registrar, created/expiry dates, status, DNSSEC, name servers, IPs, MX |
+| `GET /api/solana/token?address=` | $0.002 | Solana token check: price, market cap, liquidity, holders, 24h trading, organic score, top-holder share, on-chain mint/freeze authority and Token-2022 extensions, red flags |
+| `GET /api/solana/trending?mode=&interval=&minLiquidityUsd=` | $0.003 | Trending, new, top-traded or top-organic Solana tokens with the same fields and flags |
 
 ## Prediction markets (Panta)
 
@@ -43,6 +48,15 @@ Agents can buy market intelligence and ready-to-sign trade transactions per call
 node scripts/demo-markets.mjs --q bitcoin            # search, brief and quote, paid on Solana (~0.017 USDC)
 node scripts/demo-markets.mjs --q bitcoin --build    # also builds the unsigned transaction (+0.01); never signs or sends it
 ```
+
+## Web, e-mail, domain and Solana data
+
+| Tool | Source | Notes |
+|---|---|---|
+| `/api/read` | The page itself, fetched once with the `SiteCheckReader` User-Agent | `robots.txt` is respected (a disallowed page answers 403 and is not charged). No JavaScript is run, so pages that only render in the browser come back empty (422, not charged). PDFs and other binary files answer 415. The content belongs to its publisher. |
+| `/api/email-check` | DNS over HTTPS (Cloudflare, Google) and the [disposable-email-domains](https://github.com/disposable-email-domains/disposable-email-domains) list (CC0) | No SMTP connection is made: `unknown` means nothing is wrong with the address or its domain, not that the mailbox exists. |
+| `/api/domain` | The [IANA RDAP bootstrap](https://data.iana.org/rdap/dns.json) and each registry's RDAP server; DNS over HTTPS | `available` means the registry has no record; premium or reserved names can still be unavailable to buy. TLDs without RDAP are inferred from DNS. |
+| `/api/solana/token`, `/api/solana/trending` | [Jupiter](https://jup.ag) token API, Solana mainnet JSON-RPC (mint account), [GeckoTerminal](https://www.geckoterminal.com) for pools (best effort) | Information only, not financial advice. Nothing is signed or sent. On-chain mint and freeze authority win over the API's audit when both are available. |
 
 ## Business and compliance data
 
