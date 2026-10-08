@@ -26,7 +26,7 @@ test("the six business routes are in /openapi.json, /.well-known/x402, llms.txt 
     assert.ok(llms.includes(`(\$${price})`) && llms.includes(path), `${path} in llms.txt`);
     assert.equal(CATALOG[`GET ${path}`].price, `$${price}`);
   }
-  assert.equal(Object.keys(openapi.paths).length, 14, "8 existing + 6 new (Panta tools are off here)");
+  assert.equal(Object.keys(openapi.paths).length, 19, "8 original + 6 business + 5 web/e-mail/domain/Solana (Panta tools are off here)");
   assert.match(openapi.info.description, /VAT.*IBAN.*LEI.*recalls.*OSHA\/EPA.*UK insolvency/);
   assert.match(about([]), /business and compliance data/);
 });
